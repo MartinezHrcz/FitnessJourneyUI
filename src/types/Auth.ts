@@ -5,6 +5,6 @@ export interface authRequest{
     password: string;
 }
 export interface authResponse{
-    userDto: userDTO;
+    user: userDTO;
     token: string;
 }

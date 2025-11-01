@@ -1,5 +1,5 @@
 import {authRoutes} from "./authRoutes.tsx";
-import {userRoutes} from "./userRoutes.ts";
+import {userRoutes} from "./userRoutes.tsx";
 
 export const appRoutes =[
         ...authRoutes,

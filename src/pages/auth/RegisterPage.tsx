@@ -59,7 +59,7 @@ const RegisterPage:React.FC = ()=> {
         registerMutation.mutate(
             payload,{
                 onSuccess:() => {
-                    navigate('/auth/login');
+                    navigate('/login');
                 },
                 onError: (error) => {
                     alert(error.message || "Failed to register");
