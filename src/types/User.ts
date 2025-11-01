@@ -10,10 +10,9 @@ export interface userDTO {
 }
 
 export interface createUserDTO {
-    id: string;
     name: string;
     email: string;
-    birthday: Date;
+    birthday: string;
     weightInKg: number;
     heightIncm: number;
     password: string;
