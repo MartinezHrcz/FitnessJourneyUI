@@ -10,7 +10,7 @@ const UserMainPage:React.FC = () =>{
         if (storedUser){
             setUser(JSON.parse(storedUser) as userDTO);
         }
-    })
+    }, [])
 
     return (
         <div>

@@ -6,7 +6,6 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import type {authRequest} from "../../types/Auth.ts";
-import axios from "axios";
 
 const loginSchema = z.object({
     username: z.string(),
@@ -19,7 +18,7 @@ const LoginPage:React.FC = () => {
     const {login: loginMutation} = useAuth();
     const navigate = useNavigate();
 
-    const {register, handleSubmit, formState:{errors, isSubmitting}}= useForm<LoginForm>({
+    const {register, handleSubmit, formState:{isSubmitting}}= useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
     });
 
@@ -28,12 +27,6 @@ const LoginPage:React.FC = () => {
             username: data.username,
             password: data.password,
         }
-        axios.post("http://localhost:9090/api/auth/login", {
-            username: "herczegmartinez",
-            password: "Aa1234567!"
-        }).then(res => console.log(res.data))
-            .catch(err => console.error(err.response));
-        /*
         loginMutation.mutate(
             payload,{
                 onSuccess:(response) => {
@@ -47,7 +40,7 @@ const LoginPage:React.FC = () => {
                     alert(error.message || "Failed to login");
                 }
             }
-        )*/
+        )
     }
 
     return (
