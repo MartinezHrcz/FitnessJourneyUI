@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import type {userDTO} from "../../types/User.ts";
+import UserDashboardLayout from "../../layouts/user/UserDashboardLayout.tsx";
 
 const UserMainPage:React.FC = () =>{
 
@@ -13,11 +14,11 @@ const UserMainPage:React.FC = () =>{
     }, [])
 
     return (
-        <div>
-            <h1>Welcome, {user?.name}!</h1>
-            <p>Email: {user?.email}</p>
-            <p>ID: {user?.id}</p>
-        </div>
+        <UserDashboardLayout>
+            <div>
+                hey
+            </div>
+        </UserDashboardLayout>
     );
 }
 
