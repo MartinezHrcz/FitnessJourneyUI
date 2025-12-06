@@ -9,6 +9,7 @@ import {
     CircleUser,
     type LucideIcon
 } from "lucide-react";
+import type {userDTO} from "../../types/User.ts";
 
 interface NavItem {
     label: string;
@@ -27,9 +28,10 @@ const navItems: NavItem[] = [
 interface UserDashboardLayoutProps {
     children: ReactNode;
     activePath?: string;
+    user: userDTO | null;
 }
 
-const UserDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, activePath = "/dashboard"}) => {
+const UserDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, activePath = "/dashboard", user}) => {
     return (
         <div className="flex h-screen bg-gray-100">
             <aside className="w-64 flex flex-col bg-white shadow-xl border-r border-gray-100 p-4">
@@ -65,7 +67,7 @@ const UserDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                         Dashboard
                     </h2>
                     <div className="flex items-center gap-4">
-                        Welcome back, <strong className="text-gray-900 font-semibold">USER</strong>
+                        Welcome back, <strong className="text-gray-900 font-semibold">{user?.name}</strong>
                         <img
                             src="https://placehold.co/300x300/indigo/white?text=User"
                             alt="profile"

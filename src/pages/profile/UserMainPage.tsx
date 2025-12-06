@@ -14,10 +14,8 @@ const UserMainPage:React.FC = () =>{
     }, [])
 
     return (
-        <UserDashboardLayout>
-            <h1>Welcome, {user?.name}!</h1>
-            <p>Email: {user?.email}</p>
-            <p>ID: {user?.id}</p>
+        <UserDashboardLayout user={user}>
+            <h1>POST FEED WILL BE HERE</h1>
         </UserDashboardLayout>
     );
 }
