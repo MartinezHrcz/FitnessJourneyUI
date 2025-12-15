@@ -9,7 +9,8 @@ import {
     CircleUser,
     type LucideIcon
 } from "lucide-react";
-import type {userDTO} from "../../types/User.ts";
+
+import type {user} from "../../types/User.ts";
 
 interface NavItem {
     label: string;
@@ -28,7 +29,7 @@ const navItems: NavItem[] = [
 interface UserDashboardLayoutProps {
     children: ReactNode;
     activePath?: string;
-    user: userDTO | null;
+    user: user | null;
 }
 
 const UserDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, activePath = "/dashboard", user}) => {

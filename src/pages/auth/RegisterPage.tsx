@@ -5,7 +5,7 @@ import {UserPlus} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useAuth} from "../../hooks/useAuth.ts";
-import type {createUserDTO} from "../../types/User.ts";
+import type {createUser} from "../../types/User.ts";
 
 const registerSchema = z.object({
     username: z.string().min(8, "Username must be at least 8 characters").max(100),
@@ -47,7 +47,7 @@ const RegisterPage:React.FC = ()=> {
 
 
     const onSubmit = (data: RegisterForm) => {
-        const payload: createUserDTO = {
+        const payload: createUser = {
             name: data.username,
             email: data.email,
             birthday: data.birthday.toString().split("T")[0],

@@ -1,4 +1,4 @@
-export interface userDTO {
+export interface user {
     id: string;
     name: string;
     email: string;
@@ -9,7 +9,7 @@ export interface userDTO {
     token:string;
 }
 
-export interface createUserDTO {
+export interface createUser {
     name: string;
     email: string;
     birthday: string;
@@ -18,7 +18,7 @@ export interface createUserDTO {
     password: string;
 }
 
-export interface updateUserDTO {
+export interface updateUser {
     name: string;
     email: string;
     birthday: Date;
@@ -28,7 +28,7 @@ export interface updateUserDTO {
     token:string;
 }
 
-export interface updatePasswordDTO {
+export interface updatePassword {
     oldPassword: string;
     newPassword: string;
 }

@@ -1,10 +1,10 @@
-import type {userDTO} from "./User.ts";
+import type {user} from "./User.ts";
 
 export interface authRequest{
     username: string;
     password: string;
 }
 export interface authResponse{
-    user: userDTO;
+    user: user;
     token: string;
 }
