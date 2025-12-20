@@ -9,6 +9,7 @@ export interface AbstractWorkoutDTO{
 export interface WorkoutDTO extends AbstractWorkoutDTO {
     id: string;
     lengthInMins: number;
+    startDate: Date;
     exercises: AbstractExerciseDTO[];
 }
 
