@@ -30,9 +30,10 @@ interface UserDashboardLayoutProps {
     children: ReactNode;
     activePath?: string;
     user: user | null;
+    title: string;
 }
 
-const UserDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, activePath = "/dashboard", user}) => {
+const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, activePath = "/dashboard", user, title}) => {
     return (
         <div className="flex h-screen bg-gray-100">
             <aside className="w-64 flex flex-col bg-white shadow-xl border-r border-gray-100 p-4">
@@ -65,7 +66,7 @@ const UserDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
             <main className="flex-1 flex flex-col overflow-hidden">
                 <header className="flex items-center justify-between p-4 bg-white shadow-sm z-10 border-b border-gray-100">
                     <h2 className="text-2xl font-bold text-gray-800 tracking-tight">
-                        Dashboard
+                        {title}
                     </h2>
                     <div className="flex items-center gap-4">
                         Welcome back, <strong className="text-gray-900 font-semibold">{user?.name}</strong>
@@ -85,4 +86,4 @@ const UserDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
     );
 }
 
-export default UserDashboardLayout;
+export default MainDashboardLayout;

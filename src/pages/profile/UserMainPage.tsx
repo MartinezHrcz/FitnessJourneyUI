@@ -1,22 +1,22 @@
 import {useEffect, useState} from "react";
-import type {userDTO} from "../../types/User.ts";
-import UserDashboardLayout from "../../layouts/user/UserDashboardLayout.tsx";
+import type {user} from "../../types/User.ts";
+import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 
 const UserMainPage:React.FC = () =>{
 
-    const [user,setUser]=useState<userDTO | null>(null);
+    const [user,setUser]=useState<user | null>(null);
 
     useEffect(()=>{
         const storedUser = localStorage.getItem("user");
         if (storedUser){
-            setUser(JSON.parse(storedUser) as userDTO);
+            setUser(JSON.parse(storedUser) as user);
         }
     }, [])
 
     return (
-        <UserDashboardLayout user={user}>
+        <MainDashboardLayout user={user}>
             <h1>POST FEED WILL BE HERE</h1>
-        </UserDashboardLayout>
+        </MainDashboardLayout>
     );
 }
 
