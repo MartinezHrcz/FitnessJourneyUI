@@ -10,7 +10,7 @@ import {useNavigate} from "react-router-dom";
 const WorkoutMainPage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState<user | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState<Partial<WorkoutCreateDTO>>({
         name: "",
         description: ""

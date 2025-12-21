@@ -14,7 +14,7 @@ const UserMainPage:React.FC = () =>{
     }, [])
 
     return (
-        <MainDashboardLayout user={user}>
+        <MainDashboardLayout user={user} title={"Dashboard"} activePath={"/dashboard"}  >
             <h1>POST FEED WILL BE HERE</h1>
         </MainDashboardLayout>
     );
