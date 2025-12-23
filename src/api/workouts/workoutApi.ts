@@ -1,5 +1,6 @@
 import axiosClient from "../axiosClient.ts";
 import type {WorkoutCreateDTO, WorkoutDTO, WorkoutUpdateDTO} from "../../types/fitness/Workout.ts";
+import {data} from "autoprefixer";
 
 export const workoutApi = {
     getAll: () =>
@@ -16,6 +17,9 @@ export const workoutApi = {
 
     update: (id: string, data: WorkoutUpdateDTO) =>
         axiosClient.put<WorkoutDTO>(`/workout/${id}`, data),
+
+    finishSession: (id: string) =>
+        axiosClient.put<WorkoutDTO>(`/workout/${id}/finish`, data),
 
     delete: (id: string) =>
         axiosClient.delete(`/workout/${id}`),
