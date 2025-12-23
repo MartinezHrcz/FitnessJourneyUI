@@ -8,6 +8,8 @@ import type {user} from "../../types/User.ts";
 import AddExerciseModal from "../../components/AddExerciseModal.tsx";
 import type {AbstractExerciseDTO} from "../../types/fitness/Exercise.ts";
 import defaultExerciseApi from "../../api/exercises/defaultExerciseApi.ts";
+import type {AbstractSetDTO} from "../../types/fitness/Set.ts";
+import {exerciseApi} from "../../api/exercises/exerciseApi.ts";
 
 const WorkoutSessionPage = () => {
     const {id} = useParams<{ id: string }>();
@@ -64,6 +66,61 @@ const WorkoutSessionPage = () => {
             .then(r => setWorkout(r.data));
     }
 
+    const handleAddSet = (exerciseId: string, type: string) => {
+        let newSet : any = {
+            exerciseId,
+            type: type,
+        }
+
+        if (type === "STRENGTH") {
+            newSet = {...newSet, reps: 0, weight: 0};
+        }
+
+        exerciseApi.addSet(exerciseId, newSet).then(response => {
+            setWorkout(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    exercises: prev.exercises.map(ex =>
+                        ex.id === exerciseId ? response.data : ex
+                    )
+                };
+            });
+        }).catch(err => console.error("Failed to add set:", err));
+    }
+
+    const renderSetInputs = (set: any) => {
+        const inputClass = "bg-transparent outline-none border-b border-transparent focus:border-blue-400 w-16 px-1";
+
+        switch (set.type) {
+            case 'CARDIO':
+                return (
+                    <>
+                        <input type="number" className={inputClass} placeholder="sec" defaultValue={set.durationInSeconds} />
+                        <input type="number" className={inputClass} placeholder="km" defaultValue={set.distanceInKilometers} />
+                    </>
+                );
+            case 'FLEXIBILITY':
+                return (
+                    <>
+                        <input type="number" className={inputClass} placeholder="reps" defaultValue={set.reps} />
+                        <div />
+                    </>
+                );
+            default:
+                return (
+                    <>
+                        <input type="number" className={inputClass} placeholder="kg" defaultValue={set.weight} />
+                        <input type="number" className={inputClass} placeholder="reps" defaultValue={set.reps} />
+                    </>
+                );
+        }
+    };
+
+    const handleRemoveSet = (exercisesId:string, setId: string) => {
+        alert("delete");
+    }
+
     if (!workout) return <div className="p-8 text-center">Loading session...</div>;
 
     return (
@@ -114,20 +171,33 @@ const WorkoutSessionPage = () => {
                                 </h3>
                             </div>
                             <div className="space-y-2">
-                                <div className="grid grid-cols-3 text-[10px] font-bold text-slate-400 uppercase px-2">
+                                <div className="grid grid-cols-4 text-[10px] font-bold text-slate-400 uppercase px-2">
                                     <span>Set</span>
-                                    <span>Weight</span>
-                                    <span>Reps</span>
+                                    {exercise.type === 'CARDIO' ? (
+                                        <><span>Duration</span><span>Dist (km)</span></>
+                                    ) : (
+                                        <><span>{exercise.type === 'FLEXIBILITY' ? '' : 'Weight'}</span><span>Reps</span></>
+                                    )}
+                                    <span className="text-right">Action</span>
                                 </div>
-                                <div className="grid grid-cols-3 items-center bg-slate-50 p-2 rounded-lg text-sm">
-                                    <span className="font-bold text-slate-400">1</span>
-                                    <input type="number"
-                                           className="bg-transparent outline-none border-b border-transparent focus:border-blue-400 w-16"
-                                           placeholder="--"/>
-                                    <input type="number"
-                                           className="bg-transparent outline-none border-b border-transparent focus:border-blue-400 w-16"
-                                           placeholder="--"/>
-                                </div>
+                                {(exercise as any).sets?.map((set: any, index: number) => (
+                                    <div key={set.id} className="grid grid-cols-4 items-center bg-slate-50 p-2 rounded-lg text-sm">
+                                        <span className="font-bold text-slate-400">{index + 1}</span>
+                                        {renderSetInputs(set)}
+                                        <button
+                                            onClick={() => handleRemoveSet(exercise.id, set.id)}
+                                            className="flex justify-end text-slate-300 hover:text-red-500"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                ))}
+                                <button
+                                    onClick={() => handleAddSet(exercise.id, exercise.type)}
+                                    className="w-full py-2 border border-dashed border-slate-200 rounded-xl text-xs font-bold text-slate-400 hover:bg-slate-50 transition uppercase"
+                                >
+                                    + Add Set
+                                </button>
                             </div>
                         </section>
                     ))}
