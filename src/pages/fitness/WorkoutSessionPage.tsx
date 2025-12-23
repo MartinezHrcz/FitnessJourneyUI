@@ -5,13 +5,18 @@ import {workoutApi} from "../../api/workouts/workoutApi.ts";
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import {CheckCircle, Clock, Dumbbell, Plus, Trash2} from "lucide-react";
 import type {user} from "../../types/User.ts";
+import AddExerciseModal from "../../components/AddExerciseModal.tsx";
+import type {AbstractExerciseDTO} from "../../types/fitness/Exercise.ts";
+import defaultExerciseApi from "../../api/exercises/defaultExerciseApi.ts";
 
 const WorkoutSessionPage = () => {
     const {id} = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [workout, setWorkout] = useState<WorkoutDTO | null>(null);
+    const [exercises, setExercises] = useState<AbstractExerciseDTO[]>([]);
     const [seconds, setSeconds] = useState(0);
     const [user, setUser] = useState<user | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -27,6 +32,12 @@ const WorkoutSessionPage = () => {
             })
         }
     }, [id]);
+
+    useEffect(() => {
+        defaultExerciseApi.getAll().then(
+            r => setExercises(r.data)
+        )
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => setSeconds(s => s + 1), 1000);
@@ -45,6 +56,12 @@ const WorkoutSessionPage = () => {
         workoutApi.finishSession(workout.id).then(() => {
             navigate(`/workouts`)
         });
+    }
+
+    const handleAddExercise = (exerciseId: string) => {
+        if (!workout) return;
+        workoutApi.addDefaultExerciseToWorkout(workout.id, exerciseId)
+            .then(r => setWorkout(r.data));
     }
 
     if (!workout) return <div className="p-8 text-center">Loading session...</div>;
@@ -116,7 +133,7 @@ const WorkoutSessionPage = () => {
                     ))}
 
                     <button
-                        onClick={() => alert("Placeholder")}
+                        onClick={() => setIsModalOpen(true)}
                         className="w-full py-6 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all bg-white/50"
                     >
                         <Plus size={24}/>
@@ -124,6 +141,11 @@ const WorkoutSessionPage = () => {
                     </button>
                 </main>
             </div>
+            <AddExerciseModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSelect={handleAddExercise}
+                exercises={exercises || []} />
         </MainDashboardLayout>)
 }
 

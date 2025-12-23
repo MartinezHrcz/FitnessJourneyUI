@@ -25,14 +25,14 @@ export const workoutApi = {
         axiosClient.delete(`/workout/${id}`),
 
     addExerciseToWorkout: (workoutId: string, exerciseId: string) =>
-        axiosClient.put<WorkoutDTO>(`/workout/addexc/${workoutId}-${exerciseId}`),
+        axiosClient.put<WorkoutDTO>(`/workout/addexc/${workoutId}/${exerciseId}`),
 
     addDefaultExerciseToWorkout: (workoutId: string, templateId: string) =>
-        axiosClient.put<WorkoutDTO>(`/workout/addexc/template/default/${workoutId}-${templateId}`),
+        axiosClient.put<WorkoutDTO>(`/workout/addexc/template/default/${workoutId}/${templateId}`),
 
     addUserExerciseToWorkout: (workoutId: string, templateId: string) =>
-        axiosClient.put<WorkoutDTO>(`/workout/addexc/template/usermade/${workoutId}-${templateId}`),
+        axiosClient.put<WorkoutDTO>(`/workout/addexc/template/usermade/${workoutId}/${templateId}`),
 
     removeExerciseFromWorkout: (workoutId: string, exerciseId: string) =>
-        axiosClient.delete<WorkoutDTO>(`/workout/rmexc/${workoutId}-${exerciseId}`),
+        axiosClient.delete<WorkoutDTO>(`/workout/rmexc/${workoutId}/${exerciseId}`),
 }
