@@ -66,19 +66,17 @@ const WorkoutSessionPage = () => {
     }
 
     const handleAddSet = (exerciseId: string, type: string) => {
-        let newSet : any = {
+        let newSet: any = {
             exerciseId,
             type: type,
         }
 
         if (type === 'CARDIO') {
             newSet = {...newSet, durationInSeconds: 0, distanceInKilometers: 0};
-        }
-        else if (type === 'FLEXIBILITY'){
+        } else if (type === 'FLEXIBILITY') {
             newSet = {...newSet, reps: 0}
-        }
-        else {
-            newSet = {...newSet, reps: 0, weight:0 }
+        } else {
+            newSet = {...newSet, reps: 0, weight: 0}
         }
 
         exerciseApi.addSet(exerciseId, newSet).then(response => {
@@ -96,33 +94,39 @@ const WorkoutSessionPage = () => {
 
     const renderSetInputs = (set: any) => {
         const inputClass = "bg-transparent outline-none border-b border-transparent focus:border-blue-400 w-16 px-1";
+        const prefix = `set-${set.id}`;
 
         switch (set.type) {
             case 'CARDIO':
                 return (
                     <>
-                        <input type="number" className={inputClass} placeholder="sec" defaultValue={set.durationInSeconds} />
-                        <input type="number" className={inputClass} placeholder="km" defaultValue={set.distanceInKilometers} />
+                        <input id={`${prefix}-duration`} type="number" className={inputClass}
+                               defaultValue={set.durationInSeconds}/>
+                        <input id={`${prefix}-distance`} type="number" className={inputClass}
+                               defaultValue={set.distanceInKilometers}/>
                     </>
                 );
             case 'FLEXIBILITY':
                 return (
                     <>
-                        <input type="number" className={inputClass} placeholder="reps" defaultValue={set.reps} />
-                        <div />
+                        <input id={`${prefix}-reps`} type="number" className={inputClass} placeholder="reps"
+                               defaultValue={set.reps}/>
+                        <div/>
                     </>
                 );
             default:
                 return (
                     <>
-                        <input type="number" className={inputClass} placeholder="kg" defaultValue={set.weight} />
-                        <input type="number" className={inputClass} placeholder="reps" defaultValue={set.reps} />
+                        <input id={`${prefix}-reps`} type="number" className={inputClass} placeholder="kg"
+                               defaultValue={set.weight}/>
+                        <input id={`${prefix}-weight`} type="number" className={inputClass} placeholder="reps"
+                               defaultValue={set.reps}/>
                     </>
                 );
         }
     };
 
-    const handleRemoveSet = (exerciseId:string, setId: number) => {
+    const handleRemoveSet = (exerciseId: string, setId: number) => {
         exerciseApi.removeSet(exerciseId, setId).then(response => {
             setWorkout(prev => {
                 if (!prev) return null;
@@ -135,6 +139,22 @@ const WorkoutSessionPage = () => {
             });
         }).catch(err => console.error("Failed to remove set:", err));
     }
+
+    const handleUpdateSet = (exerciseId: string, setId: number, updatedData: any) => {
+        exerciseApi.updateSet(exerciseId, setId, updatedData)
+            .then(response => {
+                setWorkout(prev => {
+                    if (!prev) return null;
+                    return {
+                        ...prev,
+                        exercises: prev.exercises.map(ex =>
+                            ex.id === exerciseId ? response.data : ex
+                        )
+                    };
+                });
+            })
+            .catch(err => console.error("Failed to update set:", err));
+    };
 
     if (!workout) return <div className="p-8 text-center">Loading session...</div>;
 
@@ -159,6 +179,7 @@ const WorkoutSessionPage = () => {
                             >
                                 <Trash2 size={20}/>
                             </button>
+
                             <button
                                 onClick={() => handleFinishSession()}
                                 className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition shadow-md"
@@ -191,20 +212,46 @@ const WorkoutSessionPage = () => {
                                     {exercise.type === 'CARDIO' ? (
                                         <><span>Duration</span><span>Dist (km)</span></>
                                     ) : (
-                                        <><span>{exercise.type === 'FLEXIBILITY' ? '' : 'Weight'}</span><span>Reps</span></>
+                                        <>
+                                            <span>{exercise.type === 'FLEXIBILITY' ? '' : 'Weight'}</span><span>Reps</span></>
                                     )}
                                     <span className="text-right">Action</span>
                                 </div>
                                 {(exercise as any).sets?.map((set: any, index: number) => (
-                                    <div key={set.id} className="grid grid-cols-4 items-center bg-slate-50 p-2 rounded-lg text-sm">
+                                    <div key={set.id}
+                                         className="grid grid-cols-4 items-center bg-slate-50 p-2 rounded-lg text-sm">
                                         <span className="font-bold text-slate-400">{index + 1}</span>
                                         {renderSetInputs(set)}
-                                        <button
-                                            onClick={() => handleRemoveSet(exercise.id, set.id)}
-                                            className="flex justify-end text-slate-300 hover:text-red-500"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    const prefix = `set-${set.id}`;
+                                                    let data: any = {type: set.type, id: set.id};
+
+                                                    if (set.type === 'CARDIO') {
+                                                        data.durationInSeconds = Number((document.getElementById(`${prefix}-duration`) as HTMLInputElement).value);
+                                                        data.distanceInKilometers = Number((document.getElementById(`${prefix}-distance`) as HTMLInputElement).value);
+                                                    } else if (set.type === 'FLEXIBILITY') {
+                                                        data.reps = Number((document.getElementById(`${prefix}-reps`) as HTMLInputElement).value);
+                                                    } else {
+                                                        data.weight = Number((document.getElementById(`${prefix}-weight`) as HTMLInputElement).value);
+                                                        data.reps = Number((document.getElementById(`${prefix}-reps`) as HTMLInputElement).value);
+                                                    }
+
+                                                    handleUpdateSet(exercise.id, set.id, data);
+                                                }}
+                                                className="p-1 text-green-500 hover:bg-green-100 rounded transition"
+                                                title="Save Set"
+                                            >
+                                                <CheckCircle size={18}/>
+                                            </button>
+                                            <button
+                                                onClick={() => handleRemoveSet(exercise.id, set.id)}
+                                                className="text-slate-300 hover:text-red-500"
+                                            >
+                                                <Trash2 size={16}/>
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                                 <button
@@ -230,7 +277,7 @@ const WorkoutSessionPage = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSelect={handleAddExercise}
-                exercises={exercises || []} />
+                exercises={exercises || []}/>
         </MainDashboardLayout>)
 }
 
