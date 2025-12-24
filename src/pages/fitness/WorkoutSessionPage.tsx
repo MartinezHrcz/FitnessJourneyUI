@@ -18,6 +18,7 @@ const WorkoutSessionPage = () => {
     const [seconds, setSeconds] = useState(0);
     const [user, setUser] = useState<user | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [syncedSetIds, setSyncedSetIds] = useState<number[]>([]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -100,16 +101,26 @@ const WorkoutSessionPage = () => {
             case 'CARDIO':
                 return (
                     <>
-                        <input id={`${prefix}-duration`} type="number" className={inputClass}
+                        <input id={`${prefix}-duration`}
+                               type="number"
+                               className={inputClass}
+                               onChange={() => handleInputChange(set.id)}
                                defaultValue={set.durationInSeconds}/>
-                        <input id={`${prefix}-distance`} type="number" className={inputClass}
+                        <input id={`${prefix}-distance`}
+                               type="number"
+                               className={inputClass}
+                               onChange={() => handleInputChange(set.id)}
                                defaultValue={set.distanceInKilometers}/>
                     </>
                 );
             case 'FLEXIBILITY':
                 return (
                     <>
-                        <input id={`${prefix}-reps`} type="number" className={inputClass} placeholder="reps"
+                        <input id={`${prefix}-reps`}
+                               type="number"
+                               className={inputClass}
+                               placeholder="reps"
+                               onChange={() => handleInputChange(set.id)}
                                defaultValue={set.reps}/>
                         <div/>
                     </>
@@ -117,9 +128,17 @@ const WorkoutSessionPage = () => {
             default:
                 return (
                     <>
-                        <input id={`${prefix}-reps`} type="number" className={inputClass} placeholder="kg"
+                        <input id={`${prefix}-reps`}
+                               type="number"
+                               className={inputClass}
+                               placeholder="kg"
+                               onChange={() => handleInputChange(set.id)}
                                defaultValue={set.weight}/>
-                        <input id={`${prefix}-weight`} type="number" className={inputClass} placeholder="reps"
+                        <input id={`${prefix}-weight`}
+                               type="number"
+                               className={inputClass}
+                               placeholder="reps"
+                               onChange={() => handleInputChange(set.id)}
                                defaultValue={set.reps}/>
                     </>
                 );
@@ -152,9 +171,14 @@ const WorkoutSessionPage = () => {
                         )
                     };
                 });
+                setSyncedSetIds(prevState => [...prevState, setId]);
             })
             .catch(err => console.error("Failed to update set:", err));
     };
+
+    const handleInputChange = (setId: number) => {
+        setSyncedSetIds(prev => prev.filter(id => id !== setId));
+    }
 
     if (!workout) return <div className="p-8 text-center">Loading session...</div>;
 
@@ -217,43 +241,50 @@ const WorkoutSessionPage = () => {
                                     )}
                                     <span className="text-right">Action</span>
                                 </div>
-                                {(exercise as any).sets?.map((set: any, index: number) => (
-                                    <div key={set.id}
-                                         className="grid grid-cols-4 items-center bg-slate-50 p-2 rounded-lg text-sm">
-                                        <span className="font-bold text-slate-400">{index + 1}</span>
-                                        {renderSetInputs(set)}
-                                        <div className="flex justify-end gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    const prefix = `set-${set.id}`;
-                                                    let data: any = {type: set.type, id: set.id};
+                                {(exercise as any).sets?.map((set: any, index: number) => {
+                                    const isSynced = syncedSetIds.includes(set.id);
+                                    return (
+                                        <div id={set.id} key={set.id}
+                                             className={`grid grid-cols-4 items-center p-2 rounded-lg text-sm transition-colors duration-300 ${
+                                                 isSynced
+                                                     ? "bg-green-100 border border-green-200 shadow-sm"
+                                                     : "bg-slate-50 border border-transparent"
+                                             }`}>
+                                            <span className="font-bold text-slate-400">{index + 1}</span>
+                                            {renderSetInputs(set)}
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        const prefix = `set-${set.id}`;
+                                                        let data: any = {type: set.type, id: set.id};
 
-                                                    if (set.type === 'CARDIO') {
-                                                        data.durationInSeconds = Number((document.getElementById(`${prefix}-duration`) as HTMLInputElement).value);
-                                                        data.distanceInKilometers = Number((document.getElementById(`${prefix}-distance`) as HTMLInputElement).value);
-                                                    } else if (set.type === 'FLEXIBILITY') {
-                                                        data.reps = Number((document.getElementById(`${prefix}-reps`) as HTMLInputElement).value);
-                                                    } else {
-                                                        data.weight = Number((document.getElementById(`${prefix}-weight`) as HTMLInputElement).value);
-                                                        data.reps = Number((document.getElementById(`${prefix}-reps`) as HTMLInputElement).value);
-                                                    }
+                                                        if (set.type === 'CARDIO') {
+                                                            data.durationInSeconds = Number((document.getElementById(`${prefix}-duration`) as HTMLInputElement).value);
+                                                            data.distanceInKilometers = Number((document.getElementById(`${prefix}-distance`) as HTMLInputElement).value);
+                                                        } else if (set.type === 'FLEXIBILITY') {
+                                                            data.reps = Number((document.getElementById(`${prefix}-reps`) as HTMLInputElement).value);
+                                                        } else {
+                                                            data.weight = Number((document.getElementById(`${prefix}-weight`) as HTMLInputElement).value);
+                                                            data.reps = Number((document.getElementById(`${prefix}-reps`) as HTMLInputElement).value);
+                                                        }
 
-                                                    handleUpdateSet(exercise.id, set.id, data);
-                                                }}
-                                                className="p-1 text-green-500 hover:bg-green-100 rounded transition"
-                                                title="Save Set"
-                                            >
-                                                <CheckCircle size={18}/>
-                                            </button>
-                                            <button
-                                                onClick={() => handleRemoveSet(exercise.id, set.id)}
-                                                className="text-slate-300 hover:text-red-500"
-                                            >
-                                                <Trash2 size={16}/>
-                                            </button>
+                                                        handleUpdateSet(exercise.id, set.id, data);
+                                                    }}
+                                                    className="p-1 text-green-500 hover:bg-green-100 rounded transition"
+                                                    title="Save Set"
+                                                >
+                                                    <CheckCircle size={18}/>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleRemoveSet(exercise.id, set.id)}
+                                                    className="text-slate-300 hover:text-red-500"
+                                                >
+                                                    <Trash2 size={16}/>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                                 <button
                                     onClick={() => handleAddSet(exercise.id, exercise.type)}
                                     className="w-full py-2 border border-dashed border-slate-200 rounded-xl text-xs font-bold text-slate-400 hover:bg-slate-50 transition uppercase"
@@ -263,7 +294,6 @@ const WorkoutSessionPage = () => {
                             </div>
                         </section>
                     ))}
-
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="w-full py-6 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all bg-white/50"
