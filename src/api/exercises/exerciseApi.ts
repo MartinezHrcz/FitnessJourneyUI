@@ -27,6 +27,9 @@ export const exerciseApi = {
     addSet: (exerciseId: string, setData: AbstractSetDTO) =>
         axiosClient.put<AbstractExerciseDTO>(`/exercise/addset/${exerciseId}`, setData),
 
+    updateSet: (exerciseId: string, setId: number, setData: AbstractSetDTO)=>
+        axiosClient.put<AbstractExerciseDTO>(`/exercise/${exerciseId}/sets/${setId}`, setData),
+
     removeSet: (exerciseId: string, setId: number) =>
-        axiosClient.delete<AbstractExerciseDTO>(`/exercise/removeset/${exerciseId}-${setId}`)
+        axiosClient.delete<AbstractExerciseDTO>(`/exercise/removeset/${exerciseId}/${setId}`)
 }

@@ -8,7 +8,6 @@ import type {user} from "../../types/User.ts";
 import AddExerciseModal from "../../components/AddExerciseModal.tsx";
 import type {AbstractExerciseDTO} from "../../types/fitness/Exercise.ts";
 import defaultExerciseApi from "../../api/exercises/defaultExerciseApi.ts";
-import type {AbstractSetDTO} from "../../types/fitness/Set.ts";
 import {exerciseApi} from "../../api/exercises/exerciseApi.ts";
 
 const WorkoutSessionPage = () => {
@@ -72,8 +71,14 @@ const WorkoutSessionPage = () => {
             type: type,
         }
 
-        if (type === "STRENGTH") {
-            newSet = {...newSet, reps: 0, weight: 0};
+        if (type === 'CARDIO') {
+            newSet = {...newSet, durationInSeconds: 0, distanceInKilometers: 0};
+        }
+        else if (type === 'FLEXIBILITY'){
+            newSet = {...newSet, reps: 0}
+        }
+        else {
+            newSet = {...newSet, reps: 0, weight:0 }
         }
 
         exerciseApi.addSet(exerciseId, newSet).then(response => {
@@ -117,8 +122,18 @@ const WorkoutSessionPage = () => {
         }
     };
 
-    const handleRemoveSet = (exercisesId:string, setId: string) => {
-        alert("delete");
+    const handleRemoveSet = (exerciseId:string, setId: number) => {
+        exerciseApi.removeSet(exerciseId, setId).then(response => {
+            setWorkout(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    exercises: prev.exercises.map(ex =>
+                        ex.id === exerciseId ? response.data : ex
+                    )
+                };
+            });
+        }).catch(err => console.error("Failed to remove set:", err));
     }
 
     if (!workout) return <div className="p-8 text-center">Loading session...</div>;
