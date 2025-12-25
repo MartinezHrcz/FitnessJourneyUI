@@ -62,7 +62,7 @@ const WorkoutMainPage = () => {
     }
 
     const transformHistoryToHeatMap = (workout: WorkoutDTO[]) => {
-        const counts: { [key:string] : number } = {};
+        const counts: { [key: string]: number } = {};
         workout.forEach((workout) => {
             const date = new Date(workout.startDate).toISOString().split("T")[0].replace(/-/g, '/');
 
@@ -85,12 +85,45 @@ const WorkoutMainPage = () => {
         const startOfTheWeek = new Date(today);
 
         startOfTheWeek.setDate(today.getDate() - today.getDay());
-        startOfTheWeek.setHours(0,0,0);
+        startOfTheWeek.setHours(0, 0, 0);
 
-        return history.filter(w=> new Date(w.startDate) >= startOfTheWeek && w.status === 'FINISHED')
+        return history.filter(w => new Date(w.startDate) >= startOfTheWeek && w.status === 'FINISHED')
             .reduce((total, workout) => {
-                return total + workout.exercises.reduce((exSum,ex) => exSum + (ex.sets?.length || 0), 0);
-            },0);
+                return total + workout.exercises.reduce((exSum, ex) => exSum + (ex.sets?.length || 0), 0);
+            }, 0);
+    }
+
+    const calculateStreak = () => {
+        if (history.length === 0) return 0;
+
+        const workoutDates = Array.from(new Set(
+            history.filter(w => w.status === 'FINISHED')
+                .map(w => new Date(w.startDate).toDateString()).map(d => new Date(d))));
+
+        if (workoutDates.length === 0) return 0;
+
+        let streak = 0;
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0);
+
+        const latestWorkout = workoutDates[0];
+        const diffInDays = Math.floor((currentDate.getTime() - latestWorkout.getTime()) / (1000 * 3600 * 24));
+
+        if (diffInDays > 1) return 0;
+
+        for (let i = 0; i < workoutDates.length; i++) {
+            const expectedDate = new Date(workoutDates[0]);
+
+            expectedDate.setDate(expectedDate.getDate() - i);
+
+            if (workoutDates.toString() === expectedDate.toDateString()) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+
+        return streak;
     }
 
     return (
@@ -192,7 +225,8 @@ const WorkoutMainPage = () => {
                                 className="bg-white/60 p-4 rounded-2xl border border-slate-100 flex justify-between items-center"
                             >
                                 <span className="font-bold text-slate-700 text-sm">{workout.name}</span>
-                                <span className="text-xs text-slate-400">{new Date(workout.startDate).toLocaleDateString()}</span>
+                                <span
+                                    className="text-xs text-slate-400">{new Date(workout.startDate).toLocaleDateString()}</span>
                             </div>
                         ))}
                     </div>
@@ -205,7 +239,7 @@ const WorkoutMainPage = () => {
 
                     <div
                         className="w-full bg-slate-50 rounded flex items-center justify-center text-slate-400 border border-dashed border-slate-200">
-                        <FitnessHeatMap data={transformHistoryToHeatMap(history)} />
+                        <FitnessHeatMap data={transformHistoryToHeatMap(history)}/>
                     </div>
                 </section>
 
@@ -214,7 +248,7 @@ const WorkoutMainPage = () => {
                         className="bg-orange-200 p-4 rounded-xl border border-orange-100 transition hover:scale-105 duration-200">
                         <Flame className="text-orange-500 mb-1" size={24}/>
                         <p className="text-sm text-orange-800">Streak</p>
-                        <p className="text-2xl font-bold text-orange-900">5 Days</p>
+                        <p className="text-2xl font-bold text-orange-900">{calculateStreak()} Days</p>
                     </div>
                     <div
                         className="bg-blue-200 p-4 rounded-xl border border-blue-100 transition hover:scale-105 duration-200">
