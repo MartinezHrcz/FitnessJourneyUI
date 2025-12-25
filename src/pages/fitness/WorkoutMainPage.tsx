@@ -61,6 +61,19 @@ const WorkoutMainPage = () => {
         }
     }
 
+    const transformHistoryToHeatMap = (workout: WorkoutDTO[]) => {
+        const counts: { [key:string] : number } = {};
+        workout.forEach((workout) => {
+            const date = new Date(workout.startDate).toISOString().split("T")[0].replace(/-/g, '/');
+            counts[date] = (counts[date] || 0) + 1;
+        })
+
+        return Object.keys(counts).map(date => ({
+            date,
+            count: counts[date]
+        }));
+    }
+
     return (
         <MainDashboardLayout user={user} activePath={"/workouts"} title={"Your fitness starts here!"}>
 
@@ -173,7 +186,7 @@ const WorkoutMainPage = () => {
 
                     <div
                         className="w-full bg-slate-50 rounded flex items-center justify-center text-slate-400 border border-dashed border-slate-200">
-                        <FitnessHeatMap/>
+                        <FitnessHeatMap data={transformHistoryToHeatMap(history)} />
                     </div>
                 </section>
 
