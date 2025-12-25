@@ -1,4 +1,4 @@
-import type {CardioSetDTO, FlexibilitySetDTO, StrengthSetDTO} from "./Set.ts";
+import type {AbstractSetDTO, CardioSetDTO, FlexibilitySetDTO, StrengthSetDTO} from "./Set.ts";
 
 export interface AbstractExerciseDTO {
     id: string;
@@ -7,6 +7,7 @@ export interface AbstractExerciseDTO {
     workoutId: string;
     weightType: 'CABLES' | 'FREE_WEIGHT' | 'MACHINE' | 'BODYWEIGHT' | 'NOT_GIVEN' | string;
     type: 'RESISTANCE' | 'NOT_GIVEN' | 'BODY_WEIGHT' | 'CARDIO' | 'FLEXIBILITY';
+    sets: AbstractSetDTO[];
 }
 
 export interface ExerciseStrengthSetDTO extends AbstractExerciseDTO {

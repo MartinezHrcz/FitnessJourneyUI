@@ -26,6 +26,9 @@ const WorkoutSessionPage = () => {
             })
         }
     }, [id]);
+
+    if (!workout) return <div className="p-8 text-center">Loading session...</div>;
+
     return (
         <MainDashboardLayout user={user} title={"Workout"} activePath={"workouts"}>
             {workout?.status === 'ONGOING' ?
