@@ -32,9 +32,8 @@ const WorkoutSessionPage = () => {
     return (
         <MainDashboardLayout user={user} title={"Workout"} activePath={"workouts"}>
             {workout?.status === 'ONGOING' ?
-                <ActiveWorkoutSession workout={workout} setWorkout={setWorkout} /> : <FinishedWorkoutSession workout={workout} setWorkout={setWorkout} />
+                <ActiveWorkoutSession workout={workout} setWorkout={setWorkout} /> : <FinishedWorkoutSession workout={workout} />
             }
-
         </MainDashboardLayout>)
 }
 

@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import type {user} from "../../types/User.ts";
 import {BarChart3, Calendar, Flame, Play} from "lucide-react";
 import FitnessHeatMap from "../../components/FitnessHeatMap.tsx";
-import type {WorkoutCreateDTO} from "../../types/fitness/Workout.ts";
+import type {WorkoutCreateDTO, WorkoutDTO} from "../../types/fitness/Workout.ts";
 import {workoutApi} from "../../api/workouts/workoutApi.ts";
 import {useNavigate} from "react-router-dom";
 
@@ -15,6 +15,23 @@ const WorkoutMainPage = () => {
         name: "",
         description: ""
     });
+
+    const [history, setHistory] = useState<WorkoutDTO[]>([]);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser) as user;
+            setUser(parsedUser);
+
+            workoutApi.getByUserId(parsedUser.id).then((res) => {
+                const recent = res.data
+                    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+                    .slice(0, 3);
+                setHistory(recent);
+            });
+        }
+    }, []);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -101,7 +118,31 @@ const WorkoutMainPage = () => {
                     <Play size={32} fill="currentColor"/>
                     <span className="text-xl font-bold uppercase tracking-wide">Start New Workout</span>
                 </button>
+                <section className="mt-8">
+                    <div className="flex justify-between items-end mb-4 px-1">
+                        <h2 className="font-bold text-slate-800">Recent Activity</h2>
+                        <button
+                            onClick={() => navigate('/workouts/history')}
+                            className="text-xs font-bold text-blue-600 hover:underline"
+                        >
+                            View All History
+                        </button>
+                    </div>
 
+                    <div className="space-y-3">
+                        {history.slice(0, 2).map(workout => (
+                            <div
+                                key={workout.id}
+                                onClick={() => navigate(`/workouts/session/${workout.id}`)}
+                                className="bg-white/60 p-4 rounded-2xl border border-slate-100 flex justify-between items-center"
+                            >
+                                {/* Minimalist card content */}
+                                <span className="font-bold text-slate-700 text-sm">{workout.name}</span>
+                                <span className="text-xs text-slate-400">{new Date(workout.startDate).toLocaleDateString()}</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
                 <section className="bg-white p-4 rounded-xl shadow-sm border border-slate-100  mb-8">
                     <div className="flex items-center gap-2 mb-4 text-slate-600">
                         <Calendar size={20}/>

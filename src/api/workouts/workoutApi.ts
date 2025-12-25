@@ -10,7 +10,7 @@ export const workoutApi = {
         axiosClient.get<WorkoutDTO>(`/workout/${id}`),
 
     getByUserId: (userId: string) =>
-        axiosClient.get<WorkoutDTO>(`/workout/byuser/${userId}`),
+        axiosClient.get<WorkoutDTO[]>(`/workout/byuser/${userId}`),
 
     create: (data: WorkoutCreateDTO) =>
         axiosClient.post<string>(`/workout`, data),
