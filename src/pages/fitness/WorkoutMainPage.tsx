@@ -17,6 +17,7 @@ const WorkoutMainPage = () => {
     });
 
     const [history, setHistory] = useState<WorkoutDTO[]>([]);
+    const [ongoingWorkout, setOngoingWorkout] = useState<WorkoutDTO | null>(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -27,8 +28,8 @@ const WorkoutMainPage = () => {
             workoutApi.getByUserId(parsedUser.id).then((res) => {
                 const recent = res.data
                     .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
-                    .slice(0, 3);
                 setHistory(recent);
+                setOngoingWorkout(recent.find(w => w.status === 'ONGOING') ?? null);
             });
         }
     }, []);
@@ -112,11 +113,33 @@ const WorkoutMainPage = () => {
 
             <div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl p-4 flex flex-col items-center justify-center transition-transform hover:scale-x-95 shadow-lg mb-8"
+                    onClick={() => {
+                        if (ongoingWorkout) {
+                            navigate(`/workouts/session/${ongoingWorkout.id}`);
+                        } else {
+                            setIsModalOpen(true);
+                        }
+                    }}
+                    className={`w-full rounded-2xl p-4 flex flex-col items-center justify-center transition-all hover:scale-[0.98] shadow-lg mb-8 ${
+                        ongoingWorkout
+                            ? "bg-green-600 hover:bg-green-700 shadow-green-100"
+                            : "bg-blue-600 hover:bg-blue-700 shadow-blue-100"
+                    }`}
                 >
-                    <Play size={32} fill="currentColor"/>
-                    <span className="text-xl font-bold uppercase tracking-wide">Start New Workout</span>
+                    {ongoingWorkout ? (
+                        <>
+                            <Play size={32} fill="currentColor" className="animate-pulse"/>
+                            <span className="text-xl font-bold uppercase tracking-wide">Continue Workout</span>
+                            <span className="text-[10px] opacity-80 font-medium italic mt-1">
+                                Currently tracking: {ongoingWorkout.name}
+                            </span>
+                        </>
+                    ) : (
+                        <>
+                            <Play size={32} fill="currentColor"/>
+                            <span className="text-xl font-bold uppercase tracking-wide">Start New Workout</span>
+                        </>
+                    )}
                 </button>
                 <section className="mt-8">
                     <div className="flex justify-between items-end mb-4 px-1">
@@ -129,8 +152,8 @@ const WorkoutMainPage = () => {
                         </button>
                     </div>
 
-                    <div className="space-y-3">
-                        {history.slice(0, 2).map(workout => (
+                    <div className="space-y-3 mb-2.5">
+                        {history.slice(0, 3).map(workout => (
                             <div
                                 key={workout.id}
                                 onClick={() => navigate(`/workouts/session/${workout.id}`)}
