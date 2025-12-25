@@ -10,6 +10,7 @@ export interface WorkoutDTO extends AbstractWorkoutDTO {
     id: string;
     startDate: Date;
     endDate: Date;
+    status: 'FINISHED' | 'ONGOING' | 'CANCELLED' | string;
     exercises: AbstractExerciseDTO[];
 }
 
