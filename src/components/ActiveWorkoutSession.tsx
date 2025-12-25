@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import type {WorkoutDTO} from "../types/fitness/Workout.ts";
 import {workoutApi} from "../api/workouts/workoutApi.ts";
-import {CheckCircle, Clock, Dumbbell, Plus, Trash2} from "lucide-react";
+import {CheckCircle, Clock, Dumbbell, Plus, Trash2, XCircle} from "lucide-react";
 import AddExerciseModal from "./AddExerciseModal.tsx";
 import * as React from "react";
 
@@ -20,6 +20,7 @@ const ActiveWorkoutSession = ({workout, setWorkout}: ActiveWorkoutProps) =>{
     const [exercises, setExercises] = useState<AbstractExerciseDTO[]>([]);
     const [seconds, setSeconds] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [syncedSetIds, setSyncedSetIds] = useState<number[]>([]);
 
     useEffect(() => {
@@ -173,10 +174,40 @@ const ActiveWorkoutSession = ({workout, setWorkout}: ActiveWorkoutProps) =>{
         setSyncedSetIds(prev => prev.filter(id => id !== setId));
     }
 
+    const handleCancelSession = () => {
+        if (!workout) return;
+        workoutApi.cancelSession(workout?.id).then(
+            () => {navigate('/workouts')}
+        ).catch(err => console.error("Failed to cancel session:", err));
+    }
+
     if (!workout) return <div className="p-8 text-center">Loading session...</div>;
 
     return(
         <div>
+            {isCancelModalOpen && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 border border-slate-100">
+                        <h2 className="text-2xl font-bold text-slate-800 mb-2">Cancel Session</h2>
+                        <p className="text-slate-500 text-sm mb-6">Are you sure you want to cancel this session?</p>
+                        <div className="flex gap-3 mt-8">
+                            <button
+                                onClick={() => setIsCancelModalOpen(false)}
+                                className="flex-1 py-3 text-slate-500 font-semibold hover:bg-slate-50 rounded-xl transition"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={handleCancelSession}
+                                className="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl shadow-md hover:shadow-red-200 hover:bg-red-700 transition"
+                            >
+                                Cancel Session
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="min-h-screen bg-slate-50 pb-24">
                 <header className="sticky top-0 z-40 bg-white border-b border-slate-200 p-4 shadow-sm">
                     <div className="max-w-2xl mx-auto flex items-center justify-between">
@@ -190,11 +221,11 @@ const ActiveWorkoutSession = ({workout, setWorkout}: ActiveWorkoutProps) =>{
                         <div className="flex gap-2">
                             <button
                                 onClick={() => {
-                                    if (window.confirm("Discard session?")) navigate("/workouts");
+                                    setIsCancelModalOpen(true)
                                 }}
                                 className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
                             >
-                                <Trash2 size={20}/>
+                                <XCircle size={20}/>
                             </button>
 
                             <button

@@ -1,5 +1,5 @@
 import type {WorkoutDTO} from "../types/fitness/Workout.ts";
-import {Calendar, ChevronLeft, Clock, Dumbbell, Trophy} from "lucide-react";
+import {Calendar, ChevronLeft, Clock, Dumbbell, Trophy, XCircle} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 
 interface FinishedWorkoutProps {
@@ -40,7 +40,7 @@ const FinishedWorkoutSession = ( {workout} : FinishedWorkoutProps) => {
                 <div className="grid grid-cols-3 gap-3">
                     <StatCard icon={<Clock size={18}/>} label="Duration" value={calculateDuration()} color="blue" />
                     <StatCard icon={<Dumbbell size={18}/>} label="Exercises" value={workout.exercises?.length.toString()} color="purple" />
-                    <StatCard icon={<Trophy size={18}/>} label="Status" value={workout.status} color="green" />
+                    <StatCard icon={workout.status === 'FINISHED' ? <Trophy size={18}/> : <XCircle size={18} />} label="Status" value={workout.status} color={workout.status === 'FINISHED' ? "green" : 'yellow'} />
                 </div>
 
                 <div className="space-y-4">

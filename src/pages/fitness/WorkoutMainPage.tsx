@@ -159,7 +159,6 @@ const WorkoutMainPage = () => {
                                 onClick={() => navigate(`/workouts/session/${workout.id}`)}
                                 className="bg-white/60 p-4 rounded-2xl border border-slate-100 flex justify-between items-center"
                             >
-                                {/* Minimalist card content */}
                                 <span className="font-bold text-slate-700 text-sm">{workout.name}</span>
                                 <span className="text-xs text-slate-400">{new Date(workout.startDate).toLocaleDateString()}</span>
                             </div>

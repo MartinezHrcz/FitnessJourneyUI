@@ -52,7 +52,10 @@ const WorkoutHistoryPage = () => {
                                 className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 hover:shadow-md transition-all cursor-pointer flex justify-between items-center"
                             >
                                 <div className="flex gap-4 items-center">
-                                    <div className={`p-3 rounded-xl ${workout.status === 'ONGOING' ? 'bg-green-100 text-green-600' : 'bg-blue-50 text-blue-500'}`}>
+                                    <div className={`p-3 rounded-xl 
+                                    ${workout.status === 'ONGOING' ?  
+                                        'bg-green-100 text-green-600' : (workout.status === 'FINISHED' ?
+                                            'bg-blue-50 text-blue-500' : 'bg-yellow-50 text-yellow-500')}`}>
                                         <Dumbbell size={24} />
                                     </div>
                                     <div>
