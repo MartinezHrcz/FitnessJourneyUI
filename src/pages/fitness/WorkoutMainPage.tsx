@@ -65,13 +65,32 @@ const WorkoutMainPage = () => {
         const counts: { [key:string] : number } = {};
         workout.forEach((workout) => {
             const date = new Date(workout.startDate).toISOString().split("T")[0].replace(/-/g, '/');
-            counts[date] = (counts[date] || 0) + 1;
+
+            const totalSetsInWorkout = workout.exercises.reduce((sum, exercise) => {
+                return sum + (exercise.sets ? exercise.sets.length : 0);
+            }, 0);
+
+            counts[date] = (counts[date] || 0) + totalSetsInWorkout;
+
         })
 
         return Object.keys(counts).map(date => ({
             date,
             count: counts[date]
         }));
+    }
+
+    const calculateSetsThisWeek = () => {
+        const today = new Date();
+        const startOfTheWeek = new Date(today);
+
+        startOfTheWeek.setDate(today.getDate() - today.getDay());
+        startOfTheWeek.setHours(0,0,0);
+
+        return history.filter(w=> new Date(w.startDate) >= startOfTheWeek && w.status === 'FINISHED')
+            .reduce((total, workout) => {
+                return total + workout.exercises.reduce((exSum,ex) => exSum + (ex.sets?.length || 0), 0);
+            },0);
     }
 
     return (
@@ -201,7 +220,7 @@ const WorkoutMainPage = () => {
                         className="bg-blue-200 p-4 rounded-xl border border-blue-100 transition hover:scale-105 duration-200">
                         <BarChart3 className="text-blue-500 mb-1" size={24}/>
                         <p className="text-sm text-blue-800">This Week</p>
-                        <p className="text-2xl font-bold text-blue-900">42 Sets</p>
+                        <p className="text-2xl font-bold text-blue-900">{calculateSetsThisWeek()} Sets</p>
                     </div>
                 </div>
             </div>
