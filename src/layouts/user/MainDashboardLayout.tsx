@@ -68,14 +68,17 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                     <h2 className="text-2xl font-bold text-gray-800 tracking-tight">
                         {title}
                     </h2>
-                    <div className="flex items-center gap-4">
-                        Welcome back, <strong className="text-gray-900 font-semibold">{user?.name}</strong>
-                        <img
-                            src="https://placehold.co/300x300/indigo/white?text=User"
-                            alt="profile"
-                            className="w-10 h-10 rounded-full object-cover border-2 border-indigo-400 cursor-pointer transition-transform duration-200 hover:scale-105"
-                        />
-                    </div>
+
+                    <a href="/profile">
+                        <div className="flex items-center gap-4">
+                            Welcome back, <strong className="text-gray-900 font-semibold">{user?.name}</strong>
+                            <img
+                                src="https://placehold.co/300x300/indigo/white?text=User"
+                                alt="profile"
+                                className="w-10 h-10 rounded-full object-cover border-2 border-indigo-400 cursor-pointer transition-transform duration-200 hover:scale-105"
+                            />
+                        </div>
+                    </a>
                 </header>
 
                 <div className="p-8 flex-1 overflow-y-auto">

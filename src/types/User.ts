@@ -4,7 +4,7 @@ export interface user {
     email: string;
     birthday: Date;
     weightInKg: number;
-    heightIncm: number;
+    heightInCm: number;
     role: string;
     token:string;
 }
@@ -14,7 +14,7 @@ export interface createUser {
     email: string;
     birthday: string;
     weightInKg: number;
-    heightIncm: number;
+    heightInCm: number;
     password: string;
 }
 
@@ -23,7 +23,7 @@ export interface updateUser {
     email: string;
     birthday: Date;
     weightInKg: number;
-    heightIncm: number;
+    heightInCm: number;
     role: string;
     token:string;
 }
