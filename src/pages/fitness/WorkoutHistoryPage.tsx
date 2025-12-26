@@ -40,9 +40,9 @@ const WorkoutHistoryPage = () => {
 
                 <div className="space-y-4">
                     {history.length === 0 ? (
-                        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                        <div className="p-20 justify-items-center bg-white rounded-3xl border border-dashed border-slate-200">
                             <History size={48} />
-                            <p className="text-slate-400">No workouts recorded yet.</p>
+                            <h2 className="text-slate-400 text-center">No workouts recorded yet.</h2>
                         </div>
                     ) : (
                         history.map((workout) => (
