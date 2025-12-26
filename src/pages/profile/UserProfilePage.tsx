@@ -2,11 +2,13 @@ import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import type {user} from "../../types/User.ts";
 import { User, Mail, Calendar, Ruler, Scale, ShieldCheck } from "lucide-react";
 import {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 
 const UserProfilePage = () => {
 
     const [user,setUser]=useState<user | null>(null);
+    const navigate = useNavigate();
 
     useEffect(()=>{
         const storedUser = localStorage.getItem("user");
@@ -14,6 +16,12 @@ const UserProfilePage = () => {
             setUser(JSON.parse(storedUser) as user);
         }
     }, [])
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        navigate("/login");
+    }
 
     if (!user) return <div className="p-8 text-center">Loading Profile...</div>;
 
@@ -74,7 +82,9 @@ const UserProfilePage = () => {
                     </div>
                 </section>
 
-                <button className="w-full py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-red-50 hover:text-red-600 transition-colors">
+                <button
+                    onClick={handleLogout}
+                    className="w-full py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-red-50 hover:text-red-600 transition-colors">
                     Logout
                 </button>
             </div>

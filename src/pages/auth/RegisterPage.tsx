@@ -52,7 +52,7 @@ const RegisterPage:React.FC = ()=> {
             email: data.email,
             birthday: data.birthday.toString().split("T")[0],
             weightInKg: data.weight ?? 1,
-            heightIncm: data.height ?? 1,
+            heightInCm: data.height ?? 1,
             password: data.password
         };
 
