@@ -1,5 +1,5 @@
 import type {WorkoutDTO} from "../types/fitness/Workout.ts";
-import {Calendar, ChevronLeft, Clock, Dumbbell, Trophy, XCircle} from "lucide-react";
+import {Book, Calendar, ChevronLeft, Clock, Dumbbell, Trophy, XCircle} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 
 interface FinishedWorkoutProps {
@@ -24,13 +24,14 @@ const FinishedWorkoutSession = ( {workout} : FinishedWorkoutProps) => {
         <div className="min-h-screen bg-slate-50 pb-12">
             <header className="bg-white border-b border-slate-200 p-4 sticky top-0 z-40">
                 <div className="max-w-2xl mx-auto flex items-center gap-4">
-                    <button onClick={() => navigate('/workouts')} className="p-2 hover:bg-slate-100 rounded-full transition">
+                    <button onClick={() => navigate('/workouts/history')} className="p-2 hover:bg-slate-100 rounded-full transition">
                         <ChevronLeft size={24} className="text-slate-600" />
                     </button>
                     <div>
                         <h1 className="font-black text-xl text-slate-800">{workout.name}</h1>
                         <p className="text-slate-500 text-sm flex items-center gap-1">
                             <Calendar size={14} /> {new Date(workout.startDate).toLocaleDateString()}
+                            <Book size={14}/> {workout.description}
                         </p>
                     </div>
                 </div>

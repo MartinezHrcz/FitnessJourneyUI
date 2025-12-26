@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Plus, Search, X} from "lucide-react";
 import type {AbstractExerciseDTO} from "../types/fitness/Exercise.ts";
 
@@ -10,13 +10,22 @@ interface Props {
 }
 
 const AddExerciseModal = ({isOpen, onClose, onSelect, exercises}: Props) => {
+
     const[search, setSearch] = useState("");
+    const[filteredExercises, setFilteredExercises] = useState<AbstractExerciseDTO[]>(exercises);
+    
+    useEffect(() => {
+        if (search.trim().length < 0) {
+            setFilteredExercises(exercises);
+        }
+        setFilteredExercises(exercises.filter(exercise => exercise.name.toLowerCase().includes(search.toLowerCase())));
+    },[exercises, search])
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm min-h-screen">
+            <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 min-h-full">
                 <div className="p-6 border-b border-slate-100 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-slate-800">Add Exercise</h2>
                     <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full">
@@ -38,7 +47,7 @@ const AddExerciseModal = ({isOpen, onClose, onSelect, exercises}: Props) => {
                 </div>
 
                 <div className="max-h-[60vh] overflow-y-auto space-y-2 custom-scrollbar">
-                    {exercises.map((ex) => (
+                    {filteredExercises.map((ex) => (
                         <button
                             key={ex.id}
                             onClick={() => {
