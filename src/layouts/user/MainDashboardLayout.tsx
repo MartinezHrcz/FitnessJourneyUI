@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
     {label: "Dashboard", icon: LayoutDashboard , href: "/dashboard"},
     {label: "Workouts", icon: BicepsFlexed , href: "/workouts"},
     {label: "Calories", icon: Apple, href: "/calories"},
-    {label: "Friends", icon: Users, href: "/friends"},
+    {label: "Friends", icon: Users, href: "/social"},
     {label: "My Profile", icon: CircleUser, href: "/profile"},
 ]
 
