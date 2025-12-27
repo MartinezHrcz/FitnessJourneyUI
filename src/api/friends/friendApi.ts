@@ -11,6 +11,9 @@ export const friendApi = {
     create: (data: CreateFriendDTO) =>
         axiosClient.post<FriendDTO>('/friend', data),
 
+    acceptRequest: (id: string) =>
+        axiosClient.put<FriendDTO>(`/friend/${id}/accept`),
+
     delete: (id: string) =>
         axiosClient.delete(`/friend/${id}`),
 }
