@@ -12,6 +12,7 @@ const SocialHubPage = () => {
     const [user,setUser]=useState<user | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<user[]>([]);
     const [friendships, setFriendships] = useState<FriendDTO[]>([]);
+    const [badge, setBadge] = useState<number>(0);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -20,12 +21,14 @@ const SocialHubPage = () => {
             setUser(parsedUser);
             fetchSocialData(parsedUser.id);
         }
-    }, [activeTab]);
+    }, [activeTab, []]);
 
     const fetchSocialData = (userId: string) => {
         friendApi.getFriendsOfUser(userId).then((res) => {
             setFriendships(res.data);
         });
+
+        setBadge(friendships.filter(f=> f.status === 'IN_PROGRESS' && userId !== f.userId).length);
     };
 
     const handleAddFriend = (targetId: string) => {
@@ -46,7 +49,9 @@ const SocialHubPage = () => {
         if (!Array.isArray(friendships)) return [];
 
         if (activeTab === 'search') {
-            return filteredUsers.filter(f=> f.id !== user?.id).map(u => (
+            return filteredUsers.filter(f=> f.id !== user?.id
+                && !friendships.map(u=> u.friendId).includes(f.id)
+                && !friendships.map(u=> u.userId).includes(f.id)).map(u => (
                 <SocialCard
                     key={u.id}
                     type="search"
@@ -59,7 +64,7 @@ const SocialHubPage = () => {
 
         const filteredFriendships = friendships.filter(f => {
             if (activeTab === 'mine') return f.status === 'ACCEPTED';
-            if (activeTab === 'requests') return f.status === 'IN_PROGRESS';
+            if (activeTab === 'requests') return (f.status === 'IN_PROGRESS' && f.userId !== user?.id);
             return false;
         });
 
@@ -122,7 +127,7 @@ const SocialHubPage = () => {
                             onClick={() => setActiveTab('requests')}
                             icon={<Bell size={16} />}
                             label="Friend requests"
-                            badge={3}
+                            badge={badge}
                         />
                     </div>
 
@@ -172,7 +177,7 @@ const TabButton = ({active, onClick, icon, label, badge}: any) => (
         }`}
     >
         {icon} {label}
-        {badge && <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1">{badge}</span>}
+        {badge > 0 && <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1">{badge}</span>}
     </button>
 )
 
