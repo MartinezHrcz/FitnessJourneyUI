@@ -21,28 +21,32 @@ const SocialHubPage = () => {
             setUser(parsedUser);
             fetchSocialData(parsedUser.id);
         }
-    }, [activeTab, []]);
+    }, []);
+
+    useEffect(() => {
+        if (user?.id) {
+            fetchSocialData(user.id);
+        }
+    }, [user?.id, activeTab]);
 
     const fetchSocialData = (userId: string) => {
         friendApi.getFriendsOfUser(userId).then((res) => {
             setFriendships(res.data);
-        });
 
-        setBadge(friendships.filter(f=> f.status === 'IN_PROGRESS' && userId !== f.userId).length);
+            setBadge(res.data.filter(f=> f.status === 'IN_PROGRESS' && userId !== f.userId).length);
+        });
     };
 
     const handleAddFriend = (targetId: string) => {
         if (!user) return;
         friendApi.create({ userId: user.id, friendId: targetId }).then(() => {
-            alert("Request sent!");
             setActiveTab('mine');
         });
     };
 
     const handleAcceptFriend = (friendshipId: string) => {
-        friendApi.acceptRequest(friendshipId).then(() => {
-            alert("Request accepted!");
-        });
+        if (!user) return;
+        friendApi.acceptRequest(friendshipId).then(() => fetchSocialData(user?.id));
     }
 
     const renderList = () => {
