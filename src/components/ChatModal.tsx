@@ -1,7 +1,57 @@
 import {Send, X} from "lucide-react";
+import {useEffect, useState} from "react";
+import type {MessageDto} from "../types/social/Message.ts";
+import {messageApi} from "../api/messages/messageApi.ts";
+import type {FriendDTO} from "../types/social/Friend.ts";
 
 
-const ChatModal = ({friend, onClose}: {friend: any, onClose: () => void}) => {
+const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClose: () => void}) => {
+    const [messages, setMessages] = useState<MessageDto[]>([]);
+    const [newMessage, setNewMessage] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [userId, setUserId] = useState("");
+    const [friendId, setFriendId] = useState("");
+
+    useEffect(() => {
+        if (friend)
+        {
+            if (friend.isRequester)
+            {
+                setUserId(friend.userId);
+                setFriendId(friend.friendId);
+            }
+            else {
+                setUserId(friend.friendId);
+                setFriendId(friend.userId);
+            }
+            messageApi.getMessages(friend.userId, friend.friendId)
+                .then((res) => {
+                    setMessages(res.data);
+                    setLoading(false);
+                })
+                .catch(err => console.log(err));
+        }
+    }, []);
+
+    const handleSendMessage = async () => {
+        if (!newMessage.trim()) return;
+
+        const payload: MessageDto = {
+            senderId: userId,
+            recipientId: friendId,
+            content: newMessage
+        };
+
+        try {
+            const res = await messageApi.create(payload);
+            setMessages([...messages, res.data]);
+            setNewMessage("");
+        }
+        catch (error) {
+            console.log("Failed to send message:", error);
+        }
+    }
+
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
             <div className="bg-white w-full max-w-md h-[600px] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
@@ -20,25 +70,27 @@ const ChatModal = ({friend, onClose}: {friend: any, onClose: () => void}) => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
-                    <div className="flex flex-col items-start">
-                        <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm shadow-sm">
-                            Hey!
+                    {messages.map((msg) => (
+                        <div key={msg.id} className={`flex flex-col ${msg.senderId === userId ? 'items-end' : 'items-start'}`}>
+                            <div className={`p-3 rounded-2xl max-w-[80%] text-sm shadow-sm ${
+                                msg.senderId === userId
+                                    ? 'bg-blue-600 text-white rounded-tr-none'
+                                    : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'
+                            }`}>
+                                {msg.content}
+                            </div>
                         </div>
-                    </div>
-
-                    <div className="flex flex-col items-end">
-                        <div className="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] text-sm shadow-md">
-                            hey
-                        </div>
-                    </div>
+                    ))}
                 </div>
 
                 <div className="p-4 bg-white border-t border-slate-100 flex gap-2 items-center">
                     <input
-                        placeholder="Message..."
+                        onChange={(e) => setNewMessage(e.target.value)}
                         className="flex-1 bg-slate-100 rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     />
-                    <button className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
+                    <button
+                        onClick={handleSendMessage}
+                        className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
                         <Send size={18} />
                     </button>
                 </div>
