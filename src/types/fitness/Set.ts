@@ -5,8 +5,8 @@ export interface AbstractSetDTO{
 }
 
 export interface StrengthSetDTO extends AbstractSetDTO {
-    reps: number;
     weight: number;
+    reps: number;
     type: 'STRENGTH';
 }
 
