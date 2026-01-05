@@ -5,6 +5,7 @@ import type {user} from "../../types/User.ts";
 import {friendApi} from "../../api/friends/friendApi.ts";
 import type {FriendDTO} from "../../types/social/Friend.ts";
 import {userApi} from "../../api/users/userApi.ts";
+import ChatModal from "../../components/ChatModal.tsx";
 
 const SocialHubPage = () => {
     const [activeTab, setActiveTab] = useState<'mine' | 'search' | 'requests'>('mine');
@@ -13,6 +14,7 @@ const SocialHubPage = () => {
     const [filteredUsers, setFilteredUsers] = useState<user[]>([]);
     const [friendships, setFriendships] = useState<FriendDTO[]>([]);
     const [badge, setBadge] = useState<number>(0);
+    const [activeChatFriend, setActiveChatFriend] = useState<FriendDTO | null>(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -90,6 +92,7 @@ const SocialHubPage = () => {
                 type={activeTab}
                 name={f.friendName}
                 info={f.friendEmail}
+                onAction={() => setActiveChatFriend(f)}
             />
         ));
     };
@@ -169,6 +172,10 @@ const SocialHubPage = () => {
                     </div>
                 </aside>
             </div>
+            {activeChatFriend &&
+                <ChatModal
+                friend={activeChatFriend} onClose={() => setActiveChatFriend(null)} />
+            }
         </MainDashboardLayout>
     );
 }
@@ -197,7 +204,7 @@ const SocialCard = ({type, name, info, onAction}: any) => (
             </div>
         </div>
 
-        {type === 'mine' && <button className="p-2 text-slate-300 hover:text-blue-500"><MessageCircle size={20}/></button>}
+        {type === 'mine' && <button onClick={onAction} className="p-2 text-slate-300 hover:text-blue-500"><MessageCircle size={20}/></button>}
         {type === 'search' && <button onClick={onAction} className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl"><UserPlus size={20}/></button>}
         {type === 'requests' && (
             <div className="flex gap-2">
