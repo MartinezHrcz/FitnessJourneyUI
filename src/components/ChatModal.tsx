@@ -1,16 +1,51 @@
 import {Send, X} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
-import type {CreateMessageDto, MessageDto} from "../types/social/Message.ts";
 import {messageApi} from "../api/messages/messageApi.ts";
 import type {FriendDTO} from "../types/social/Friend.ts";
-
+import { Client } from '@stomp/stompjs';
 
 const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClose: () => void}) => {
-    const [messages, setMessages] = useState<MessageDto[]>([]);
+    const [messages, setMessages] = useState<any[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
     const [currentUserId, setCurrentUserId] = useState("");
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const stompClient = useRef<Client | null>(null);
+
+    useEffect(() => {
+        if (!currentUserId) return;
+
+        const client = new Client({
+            brokerURL: 'ws://localhost:9090/ws-chat',
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+            debug: (str) => console.log(str),
+        });
+
+        client.onConnect = (frame) => {
+            console.log('Connected: ' + frame);
+
+            client.subscribe(`/user/${currentUserId}/queue/messages`, (message) => {
+                if (message.body) {
+                    const newMessage = JSON.parse(message.body);
+                    setMessages((prev) => [...prev, newMessage]);
+                }
+            });
+        };
+
+        client.onStompError = (frame) => {
+            console.error('Broker reported error: ' + frame.headers['message']);
+            console.error('Additional details: ' + frame.body);
+        };
+
+        client.activate();
+        stompClient.current = client;
+
+        return () => {
+            client.deactivate();
+        };
+    }, [currentUserId]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -37,24 +72,21 @@ const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClos
         scrollToBottom();
     }, [messages]);
 
-    const handleSendMessage = async () => {
-        if (!newMessage.trim()) return;
+    const handleSendMessage = () => {
+        if (stompClient.current?.connected && newMessage.trim()) {
+            const payload = {
+                senderId: currentUserId,
+                recipientId: currentUserId === friend.friendId ? friend.userId : friend.friendId,
+                content: newMessage,
+            };
 
-        const payload: CreateMessageDto = {
-            senderId: currentUserId,
-            recipientId: currentUserId == friend.friendId ? friend.userId: friend.friendId,
-            content: newMessage
-        };
-
-        try {
-            const res = await messageApi.create(payload);
-            setMessages([...messages, res.data]);
+            stompClient.current.publish({
+                destination: '/app/chat.sendMessage',
+                body: JSON.stringify(payload),
+            });
             setNewMessage("");
         }
-        catch (error) {
-            console.log("Failed to send message:", error);
-        }
-    }
+    };
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
@@ -82,6 +114,11 @@ const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClos
                                     : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'
                             }`}>
                                 {msg.content}
+                                {msg.sentTime && (
+                                    <div className={`text-[10px] mt-1 opacity-70 ${msg.senderId === currentUserId ? 'text-right' : 'text-left'}`}>
+                                        {new Date(msg.sentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
