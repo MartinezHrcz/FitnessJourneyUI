@@ -13,10 +13,10 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
             <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                        {"User"}
+                        {post.userName.charAt(0).toUpperCase() || "U"}
                     </div>
                     <div>
-                        <p className="font-bold text-slate-800">{post.id || "User"}</p>
+                        <p className="font-bold text-slate-800">{post.userName || "User"}</p>
                         <div className="flex items-center gap-1 text-slate-400 text-xs">
                             <Clock size={12} />
                             {new Date(post.sentTime).toLocaleDateString()}

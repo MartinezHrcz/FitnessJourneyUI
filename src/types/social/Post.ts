@@ -3,6 +3,7 @@ export interface PostDto {
     title: string;
     content: string;
     userId: string;
+    userName: string;
     sentTime: Date;
 }
 

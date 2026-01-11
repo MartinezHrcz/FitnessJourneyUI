@@ -59,7 +59,9 @@ const UserMainPage:React.FC = () =>{
             <div className="max-w-2xl mx-auto py-4 px-2">
                 <div className="bg-white rounded-3xl p-4 shadow-md border border-slate-100 mb-8">
                     <div className="flex gap-4">
-                        <div className="w-12 h-12 bg-slate-100 rounded-full flex-shrink-0" />
+                        <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                            {user?.name.charAt(0).toUpperCase() || "U"}
+                        </div>
                         <textarea
                             value={newPostContent}
                             onChange={(e) => setNewPostContent(e.target.value)}
