@@ -3,7 +3,7 @@ import type {user} from "../../types/User.ts";
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import type {PostDto} from "../../types/social/Post.ts";
 import {postApi} from "../../api/posts/postApi.ts";
-import {Send} from "lucide-react";
+import {Send, Image as ImageIcon, X} from "lucide-react";
 import {PostCard} from "../../components/PostCard.tsx";
 
 const UserMainPage:React.FC = () =>{
@@ -11,6 +11,23 @@ const UserMainPage:React.FC = () =>{
     const [user,setUser]=useState<user | null>(null);
     const [posts, setPosts] = useState<PostDto[]>([]);
     const [newPostContent, setNewPostContent] = useState("");
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedImage(file);
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+
+            e.target.value = "";
+        }
+    };
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -30,9 +47,20 @@ const UserMainPage:React.FC = () =>{
     const handleCreatePost = async () => {
         if (!user || !newPostContent.trim()) return;
         try {
-            await postApi.create({ userId: user.id, title: "new post", content: newPostContent });
+            let res;
+            if (selectedImage) {
+                res = await postApi.createWithImage(newPostContent, selectedImage);
+            } else {
+                res = await postApi.create({
+                    userId: user.id,
+                    title: "New Post",
+                    content: newPostContent
+                });
+            }
+            setPosts([res.data, ...posts]);
             setNewPostContent("");
-            fetchPosts();
+            setSelectedImage(null);
+            setPreviewUrl(null);
         } catch (err) {
             console.error("Error creating post", err);
         }
@@ -70,7 +98,22 @@ const UserMainPage:React.FC = () =>{
                             rows={3}
                         />
                     </div>
-                    <div className="flex justify-end mt-3">
+                    {previewUrl && (
+                        <div className="relative w-full h-48 mt-2">
+                            <img src={previewUrl} className="w-full h-full object-cover rounded-xl" />
+                            <button
+                                onClick={() => {setSelectedImage(null); setPreviewUrl(null);}}
+                                className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full">
+                                <X size={16} />
+                            </button>
+                        </div>
+                    )}
+                    <div className="flex justify-between items-center mt-3">
+                        <label className="cursor-pointer text-slate-500 hover:text-blue-600 flex items-center gap-2">
+                            <ImageIcon size={20} />
+                            <span className="text-sm font-medium">Add Photo</span>
+                            <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                        </label>
                         <button
                             onClick={handleCreatePost}
                             disabled={!newPostContent.trim()}

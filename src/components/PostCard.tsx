@@ -3,6 +3,7 @@ import type { PostDto } from "../types/social/Post.ts";
 import {useEffect, useState} from "react";
 import type {CommentDTO} from "../types/social/Comment.ts";
 import {commentApi} from "../api/comments/commentApi.ts";
+import {postApi} from "../api/posts/postApi.ts";
 
 interface PostCardProps {
     post: PostDto;
@@ -15,6 +16,8 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
     const [showComments, setShowComments] = useState(false);
     const [comments, setComments] = useState<CommentDTO[]>([]);
     const [newComment, setNewComment] = useState("");
+    const [liked, setLiked] = useState(post.likedByCurrentUser);
+    const [likeCount, setLikeCount] = useState(post.likeCount);
 
     useEffect(() => {
         if (showComments) {
@@ -55,6 +58,20 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
         }
     };
 
+    const handleLike = async () => {
+        const previouslyLiked = liked;
+        setLiked(!previouslyLiked);
+        setLikeCount(prev => previouslyLiked ? prev - 1 : prev + 1);
+
+        try {
+            await postApi.like(post.id);
+        } catch (err) {
+            setLiked(previouslyLiked);
+            setLikeCount(post.likeCount);
+            console.error("Failed to toggle like", err);
+        }
+    };
+
     return (
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-6">
             <div className="flex justify-between items-start mb-4">
@@ -80,8 +97,13 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
             <p className="text-slate-600 leading-relaxed mb-4">{post.content}</p>
 
             <div className="flex gap-4 pt-4 border-t border-slate-50">
-                <button className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors text-sm font-medium">
-                    <Heart size={18} /> Like
+                <button
+                    onClick={handleLike}
+                    className={`flex items-center gap-2 transition-colors text-sm font-medium ${
+                            liked ? 'text-red-500' : 'text-slate-500 hover:text-red-500'
+                        }`}>
+                    <Heart size={18} fill={liked ? "currentColor" : "none"} /> Like
+                    <span>{likeCount}</span>
                 </button>
                 <button
                     onClick={() => setShowComments(!showComments)}

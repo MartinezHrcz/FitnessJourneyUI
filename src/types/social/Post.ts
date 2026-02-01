@@ -4,7 +4,11 @@ export interface PostDto {
     content: string;
     userId: string;
     userName: string;
-    sentTime: Date;
+    imageUrl: string | null;
+    sentTime: string;
+    likeCount: number;
+    commentCount: number;
+    likedByCurrentUser: boolean;
 }
 
 export interface PostCreateDto {
