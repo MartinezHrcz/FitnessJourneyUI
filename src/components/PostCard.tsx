@@ -102,8 +102,12 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
                     className={`flex items-center gap-2 transition-colors text-sm font-medium ${
                             liked ? 'text-red-500' : 'text-slate-500 hover:text-red-500'
                         }`}>
-                    <Heart size={18} fill={liked ? "currentColor" : "none"} /> Like
-                    <span>{likeCount}</span>
+                    <Heart size={18}
+                           fill={liked ? "currentColor" : "none"}
+                           className={`transition-transform duration-200 ${
+                               liked ? "scale-125" : "scale-100"
+                           }`} /> Like
+                    <span className={"tabular-nums"}>{likeCount}</span>
                 </button>
                 <button
                     onClick={() => setShowComments(!showComments)}
