@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import type {CommentDTO} from "../types/social/Comment.ts";
 import {commentApi} from "../api/comments/commentApi.ts";
 import {postApi} from "../api/posts/postApi.ts";
+import {fileShareApi} from "../api/file/fileShareApi.ts";
 
 interface PostCardProps {
     post: PostDto;
@@ -24,6 +25,27 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
             fetchComments();
         }
     }, [showComments]);
+
+    const SecureImage = ({ filename, alt }: { filename: string; alt: string }) => {
+        const [imgSrc, setImgSrc] = useState<string>("");
+
+        useEffect(() => {
+            if (!filename) return;
+
+            fileShareApi.getFile(filename)
+                .then((response) => {
+                    const url = URL.createObjectURL(response.data);
+                    setImgSrc(url);
+                })
+                .catch((err) => console.error("Could not fetch secure image", err));
+
+            return () => {
+                if (imgSrc) URL.revokeObjectURL(imgSrc);
+            };
+        }, [filename]);
+
+        return imgSrc ? <img src={imgSrc} alt={alt} /> : <span>Loading image...</span>;
+    };
 
     const fetchComments = async () => {
         try {
@@ -95,6 +117,12 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
             </div>
 
             <p className="text-slate-600 leading-relaxed mb-4">{post.content}</p>
+
+            {post.imageUrl && (
+                <div className="mt-4 mb-4 rounded-2xl overflow-hidden border border-slate-100 bg-slate-50">
+                    <SecureImage filename={post.imageUrl} alt={"post picture"}></SecureImage>
+                </div>
+            )}
 
             <div className="flex gap-4 pt-4 border-t border-slate-50">
                 <button

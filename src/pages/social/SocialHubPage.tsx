@@ -56,7 +56,7 @@ const SocialHubPage = () => {
 
         if (activeTab === 'search') {
             return filteredUsers.filter(f=> f.id !== user?.id
-                && !friendships.map(u=> u.friendId).includes(f.id)
+                && !friendships.map(u   => u.friendId).includes(f.id)
                 && !friendships.map(u=> u.userId).includes(f.id)).map(u => (
                 <SocialCard
                     key={u.id}

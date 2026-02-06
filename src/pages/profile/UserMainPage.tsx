@@ -49,7 +49,12 @@ const UserMainPage:React.FC = () =>{
         try {
             let res;
             if (selectedImage) {
-                res = await postApi.createWithImage(newPostContent, selectedImage);
+                const postData = JSON.stringify({
+                    title: "New Post",
+                    content: newPostContent,
+                    userId: user.id
+                });
+                res = await postApi.createWithImage(postData, selectedImage);
             } else {
                 res = await postApi.create({
                     userId: user.id,
@@ -57,6 +62,7 @@ const UserMainPage:React.FC = () =>{
                     content: newPostContent
                 });
             }
+
             setPosts([res.data, ...posts]);
             setNewPostContent("");
             setSelectedImage(null);

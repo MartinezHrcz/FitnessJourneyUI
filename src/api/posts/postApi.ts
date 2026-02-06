@@ -19,7 +19,7 @@ export const postApi = {
             formData.append("image", image);
         }
 
-        return axiosClient.post<PostDto>("/post", formData, {
+        return axiosClient.post<PostDto>("/post/with-image", formData, {
             headers: { "Content-Type": "multipart/form-data" }
         });
     },
