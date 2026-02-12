@@ -1,10 +1,10 @@
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import { useEffect, useState } from "react";
 import type { user } from "../../types/User.ts";
-import {Utensils, Plus, Search, Trash2, Flame, Wheat, Beef, Droplets, PlusCircle} from "lucide-react";
+import {Utensils, Plus, Search, Trash2, Flame, Wheat, Beef, Droplets, PlusCircle, CheckCircle2} from "lucide-react";
 import { calorieLogApi } from "../../api/diet/calorieLogApi.ts";
 import { foodItemApi } from "../../api/diet/dietApi.ts";
-import type { CalorieLogDTO, FoodItemDTO } from "../../types/diet/Diet.ts";
+import type {CalorieLogDTO, FoodItemCreateDTO, FoodItemDTO} from "../../types/diet/Diet.ts";
 
 const CaloriesMainPage = () => {
     const [user, setUser] = useState<user | null>(null);
@@ -14,6 +14,8 @@ const CaloriesMainPage = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const today = new Date().toISOString().split('T')[0];
+
+    const staples = ["Chicken", "Rice", "Egg", "Oats", "Banana"];
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [newFoodData, setNewFoodData] = useState<FoodItemCreateDTO>({
@@ -42,8 +44,8 @@ const CaloriesMainPage = () => {
 
     const handleSearch = async (query: string) => {
         setSearchQuery(query);
-        if (query.length > 2) {
-            const res = await foodItemApi.searchFoods(query);
+        if (query.length > 1) {
+            const res = await foodItemApi.searchFoods(query, undefined);
             setSearchResults(res.data);
         } else {
             setSearchResults([]);
@@ -88,18 +90,36 @@ const CaloriesMainPage = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
                     <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 border border-slate-100 max-h-[80vh] flex flex-col">
                         <h2 className="text-2xl font-bold text-slate-800 mb-4">Add Food</h2>
+
                         <div className="relative mb-4">
                             <Search className="absolute left-3 top-3 text-slate-400" size={20} />
                             <input
                                 autoFocus
                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 pl-10 outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                placeholder="Search for food (e.g. Chicken, Rice...)"
+                                placeholder="Search foods..."
                                 value={searchQuery}
                                 onChange={(e) => handleSearch(e.target.value)}
                             />
                         </div>
 
                         <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                            {searchQuery.length === 0 && (
+                                <div className="mb-4 animate-in fade-in slide-in-from-top-2">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 px-1">Common Staples</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {staples.map(item => (
+                                            <button
+                                                key={item}
+                                                onClick={() => handleSearch(item)}
+                                                className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-blue-100 hover:text-blue-600 transition"
+                                            >
+                                                + {item}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {searchResults.map(food => (
                                 <button
                                     key={food.id}
@@ -107,21 +127,29 @@ const CaloriesMainPage = () => {
                                     className="w-full text-left p-4 hover:bg-blue-50 rounded-2xl border border-transparent hover:border-blue-100 transition-all flex justify-between items-center group"
                                 >
                                     <div>
-                                        <p className="font-bold text-slate-700">{food.name}</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-bold text-slate-700">{food.name}</p>
+                                            {food.isDefault && (
+                                                <span className="flex items-center gap-0.5 text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                                                    <CheckCircle2 size={10} /> Verified
+                                                </span>
+                                            )}
+                                        </div>
                                         <p className="text-xs text-slate-400">{food.calories} kcal / {food.servingSize}{food.servingUnit}</p>
                                     </div>
                                     <Plus size={20} className="text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </button>
                             ))}
+
                             <button
                                 onClick={() => { setIsSearchOpen(false); setIsCreateModalOpen(true); }}
-                                className="w-full mt-4 p-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2 font-bold"
+                                className="w-full mt-4 p-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2 font-bold text-sm"
                             >
-                                <PlusCircle size={20} /> Can't find it? Create new food
+                                <PlusCircle size={18} /> Can't find it? Create custom food
                             </button>
                         </div>
 
-                        <button onClick={() => setIsSearchOpen(false)} className="mt-4 py-3 text-slate-500 font-semibold w-full">Close</button>
+                        <button onClick={() => setIsSearchOpen(false)} className="mt-4 py-3 text-slate-400 font-bold w-full text-sm">Cancel</button>
                     </div>
                 </div>
             )}

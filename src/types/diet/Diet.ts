@@ -7,6 +7,7 @@ export interface FoodItemDTO {
     protein: number;
     carbs: number;
     fats: number;
+    isDefault: boolean;
     nutritionSummary?: string;
 }
 
