@@ -1,7 +1,7 @@
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import { useEffect, useState } from "react";
 import type { user } from "../../types/User.ts";
-import { Utensils, Plus, Search, Trash2, Flame, Wheat, Beef, Droplets } from "lucide-react";
+import {Utensils, Plus, Search, Trash2, Flame, Wheat, Beef, Droplets, PlusCircle} from "lucide-react";
 import { calorieLogApi } from "../../api/diet/calorieLogApi.ts";
 import { foodItemApi } from "../../api/diet/dietApi.ts";
 import type { CalorieLogDTO, FoodItemDTO } from "../../types/diet/Diet.ts";
@@ -14,6 +14,17 @@ const CaloriesMainPage = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const today = new Date().toISOString().split('T')[0];
+
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newFoodData, setNewFoodData] = useState<FoodItemCreateDTO>({
+        name: "",
+        servingSize: 100,
+        servingUnit: "g",
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fats: 0
+    });
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -36,6 +47,17 @@ const CaloriesMainPage = () => {
             setSearchResults(res.data);
         } else {
             setSearchResults([]);
+        }
+    };
+
+    const handleCreateFood = async () => {
+        try {
+            const res = await foodItemApi.createFoodItem(newFoodData);
+            await addMeal(res.data.id);
+            setIsCreateModalOpen(false);
+            setNewFoodData({ name: "", servingSize: 100, servingUnit: "g", calories: 0, protein: 0, carbs: 0, fats: 0 });
+        } catch {
+            alert("Error creating food item. Please check the values.");
         }
     };
 
@@ -91,9 +113,65 @@ const CaloriesMainPage = () => {
                                     <Plus size={20} className="text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </button>
                             ))}
+                            <button
+                                onClick={() => { setIsSearchOpen(false); setIsCreateModalOpen(true); }}
+                                className="w-full mt-4 p-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2 font-bold"
+                            >
+                                <PlusCircle size={20} /> Can't find it? Create new food
+                            </button>
                         </div>
 
                         <button onClick={() => setIsSearchOpen(false)} className="mt-4 py-3 text-slate-500 font-semibold w-full">Close</button>
+                    </div>
+                </div>
+            )}
+
+            {isCreateModalOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 border border-slate-100">
+                        <h2 className="text-2xl font-bold text-slate-800 mb-6">Create New Food</h2>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Food Name</label>
+                                <input
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="e.g. Protein Bar"
+                                    onChange={(e) => setNewFoodData({...newFoodData, name: e.target.value})}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Serving Size</label>
+                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
+                                           placeholder="100" onChange={(e) => setNewFoodData({...newFoodData, servingSize: Number(e.target.value)})}/>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Unit</label>
+                                    <input className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
+                                           placeholder="g / ml / oz" onChange={(e) => setNewFoodData({...newFoodData, servingUnit: e.target.value})}/>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Calories (kcal)</label>
+                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
+                                           onChange={(e) => setNewFoodData({...newFoodData, calories: Number(e.target.value)})}/>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Protein (g)</label>
+                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
+                                           onChange={(e) => setNewFoodData({...newFoodData, protein: Number(e.target.value)})}/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 mt-8">
+                            <button onClick={() => setIsCreateModalOpen(false)} className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition">Cancel</button>
+                            <button onClick={handleCreateFood} className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition">Save & Log</button>
+                        </div>
                     </div>
                 </div>
             )}
