@@ -194,6 +194,18 @@ const CaloriesMainPage = () => {
                                            onChange={(e) => setNewFoodData({...newFoodData, protein: Number(e.target.value)})}/>
                                 </div>
                             </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Carbohydrates (g)</label>
+                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
+                                           onChange={(e) => setNewFoodData({...newFoodData, carbs: Number(e.target.value)})}/>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Fats (g)</label>
+                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
+                                           onChange={(e) => setNewFoodData({...newFoodData, fats: Number(e.target.value)})}/>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex gap-3 mt-8">
