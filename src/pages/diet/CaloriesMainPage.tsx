@@ -1,10 +1,15 @@
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import { useEffect, useState } from "react";
 import type { user } from "../../types/User.ts";
-import {Utensils, Plus, Search, Trash2, Flame, Wheat, Beef, Droplets, PlusCircle, CheckCircle2} from "lucide-react";
+import {Utensils, Plus, Trash2, Flame, Wheat, Beef, Droplets, History} from "lucide-react";
 import { calorieLogApi } from "../../api/diet/calorieLogApi.ts";
 import { foodItemApi } from "../../api/diet/dietApi.ts";
 import type {CalorieLogDTO, FoodItemCreateDTO, FoodItemDTO} from "../../types/diet/Diet.ts";
+import {SearchModal} from "./components/SearchModal.tsx";
+import {MacroNutrientCard} from "./components/MacroNutrientCards.tsx";
+import {CreateFoodModal} from "./components/CreateFoodModal.tsx";
+import {Link} from "react-router-dom";
+import {DailyCalorieSummary} from "./components/DailyCaloriesSummary.tsx";
 
 const CaloriesMainPage = () => {
     const [user, setUser] = useState<user | null>(null);
@@ -15,7 +20,6 @@ const CaloriesMainPage = () => {
 
     const today = new Date().toISOString().split('T')[0];
 
-    const staples = ["Chicken", "Rice", "Egg", "Oats", "Banana"];
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [newFoodData, setNewFoodData] = useState<FoodItemCreateDTO>({
@@ -86,161 +90,50 @@ const CaloriesMainPage = () => {
     return (
         <MainDashboardLayout user={user} activePath="/calories" title="Fuel your journey">
 
-            {isSearchOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 border border-slate-100 max-h-[80vh] flex flex-col">
-                        <h2 className="text-2xl font-bold text-slate-800 mb-4">Add Food</h2>
+            <SearchModal
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                onSearch={handleSearch}
+                results={searchResults}
+                onAdd={addMeal}
+                searchQuery={searchQuery}
+                onCreateNew={
+                    function (): void {
+                        setIsSearchOpen(false);
+                        setIsCreateModalOpen(true);
+                    }}
+            />
 
-                        <div className="relative mb-4">
-                            <Search className="absolute left-3 top-3 text-slate-400" size={20} />
-                            <input
-                                autoFocus
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 pl-10 outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                placeholder="Search foods..."
-                                value={searchQuery}
-                                onChange={(e) => handleSearch(e.target.value)}
-                            />
-                        </div>
+            <CreateFoodModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                formData={newFoodData}
+                setFormData={setNewFoodData}
+                onSubmit={handleCreateFood}
+            />
 
-                        <div className="flex-1 overflow-y-auto space-y-2 pr-2">
-                            {searchQuery.length === 0 && (
-                                <div className="mb-4 animate-in fade-in slide-in-from-top-2">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 px-1">Common Staples</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {staples.map(item => (
-                                            <button
-                                                key={item}
-                                                onClick={() => handleSearch(item)}
-                                                className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-blue-100 hover:text-blue-600 transition"
-                                            >
-                                                + {item}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {searchResults.map(food => (
-                                <button
-                                    key={food.id}
-                                    onClick={() => addMeal(food.id)}
-                                    className="w-full text-left p-4 hover:bg-blue-50 rounded-2xl border border-transparent hover:border-blue-100 transition-all flex justify-between items-center group"
-                                >
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-bold text-slate-700">{food.name}</p>
-                                            {food.isDefault && (
-                                                <span className="flex items-center gap-0.5 text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
-                                                    <CheckCircle2 size={10} /> Verified
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p className="text-xs text-slate-400">{food.calories} kcal / {food.servingSize}{food.servingUnit}</p>
-                                    </div>
-                                    <Plus size={20} className="text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </button>
-                            ))}
-
-                            <button
-                                onClick={() => { setIsSearchOpen(false); setIsCreateModalOpen(true); }}
-                                className="w-full mt-4 p-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2 font-bold text-sm"
-                            >
-                                <PlusCircle size={18} /> Can't find it? Create custom food
-                            </button>
-                        </div>
-
-                        <button onClick={() => setIsSearchOpen(false)} className="mt-4 py-3 text-slate-400 font-bold w-full text-sm">Cancel</button>
-                    </div>
+            <div className="flex justify-between items-end mb-4 px-1">
+                <div>
+                    <h1 className="text-2xl font-black text-slate-800">Nutrition</h1>
+                    <p className="text-xs text-slate-400 font-medium">{new Date().toDateString()}</p>
                 </div>
-            )}
-
-            {isCreateModalOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
-                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 border border-slate-100">
-                        <h2 className="text-2xl font-bold text-slate-800 mb-6">Create New Food</h2>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Food Name</label>
-                                <input
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="e.g. Protein Bar"
-                                    onChange={(e) => setNewFoodData({...newFoodData, name: e.target.value})}
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Serving Size</label>
-                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
-                                           placeholder="100" onChange={(e) => setNewFoodData({...newFoodData, servingSize: Number(e.target.value)})}/>
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Unit</label>
-                                    <input className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
-                                           placeholder="g / ml / oz" onChange={(e) => setNewFoodData({...newFoodData, servingUnit: e.target.value})}/>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Calories (kcal)</label>
-                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
-                                           onChange={(e) => setNewFoodData({...newFoodData, calories: Number(e.target.value)})}/>
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Protein (g)</label>
-                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
-                                           onChange={(e) => setNewFoodData({...newFoodData, protein: Number(e.target.value)})}/>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Carbohydrates (g)</label>
-                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
-                                           onChange={(e) => setNewFoodData({...newFoodData, carbs: Number(e.target.value)})}/>
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Fats (g)</label>
-                                    <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"
-                                           onChange={(e) => setNewFoodData({...newFoodData, fats: Number(e.target.value)})}/>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3 mt-8">
-                            <button onClick={() => setIsCreateModalOpen(false)} className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition">Cancel</button>
-                            <button onClick={handleCreateFood} className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition">Save & Log</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                <Link
+                    to="/calories/history"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm border border-slate-200/50"
+                >
+                    <History size={14} />
+                    View History
+                </Link>
+            </div>
 
             <div className="space-y-6 pb-20">
-                <section className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <div className="flex justify-between items-center mb-6">
-                        <div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Daily Calories</p>
-                            <h2 className="text-3xl font-black text-slate-800">{dailyLog?.totalCalories || 0} <span className="text-lg font-bold text-slate-300">/ {calorieGoal}</span></h2>
-                        </div>
-                        <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl">
-                            <Flame size={24} fill="currentColor" />
-                        </div>
-                    </div>
-
-                    <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-6">
-                        <div
-                            className="h-full bg-orange-500 transition-all duration-1000 ease-out"
-                            style={{ width: `${calorieProgress}%` }}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                        <MacroMiniCard label="Protein" value={dailyLog?.totalProtein || 0} unit="g" color="blue" icon={<Beef size={14}/>} />
-                        <MacroMiniCard label="Carbs" value={dailyLog?.totalCarbs || 0} unit="g" color="green" icon={<Wheat size={14}/>} />
-                        <MacroMiniCard label="Fats" value={dailyLog?.totalFats || 0} unit="g" color="yellow" icon={<Droplets size={14}/>} />
-                    </div>
-                </section>
+                <DailyCalorieSummary
+                    totalCalories={dailyLog?.totalCalories || 0}
+                    goal={calorieGoal}
+                    protein={dailyLog?.totalProtein || 0}
+                    carbs={dailyLog?.totalCarbs || 0}
+                    fats={dailyLog?.totalFats || 0}
+                />
 
                 <button
                     onClick={() => setIsSearchOpen(true)}
@@ -256,7 +149,7 @@ const CaloriesMainPage = () => {
                     </div>
 
                     <div className="space-y-3">
-                        {dailyLog?.entries.length === 0 ? (
+                        {dailyLog?.entries?.length === 0 ? (
                             <div className="text-center py-10 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
                                 <p className="text-slate-400 text-sm italic">No food logged yet. Start eating!</p>
                             </div>
@@ -282,21 +175,6 @@ const CaloriesMainPage = () => {
                 </section>
             </div>
         </MainDashboardLayout>
-    );
-};
-
-const MacroMiniCard = ({ label, value, unit, color, icon }: any) => {
-    const colors: any = {
-        blue: "bg-blue-50 text-blue-600 border-blue-100",
-        green: "bg-green-50 text-green-600 border-green-100",
-        yellow: "bg-yellow-50 text-yellow-600 border-yellow-100",
-    };
-    return (
-        <div className={`p-3 rounded-2xl border ${colors[color]} text-center`}>
-            <div className="flex justify-center mb-1">{icon}</div>
-            <p className="text-[9px] font-bold uppercase opacity-70 tracking-tighter leading-none mb-1">{label}</p>
-            <p className="text-sm font-black">{value}{unit}</p>
-        </div>
     );
 };
 

@@ -5,6 +5,9 @@ export const calorieLogApi = {
     getDailyLog: (date: string) =>
         axiosClient.get<CalorieLogDTO>(`/diet/log/${date}`),
 
+    getHistoryLogs: () =>
+        axiosClient.get<CalorieLogDTO[]>("/diet/log/history"),
+
     addMealToLog: (date: string, data: MealEntryCreateDTO) =>
         axiosClient.post<CalorieLogDTO>(`/diet/log/${date}/meal`, data),
 
