@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import type {CalorieLogDTO} from "../../../types/diet/Diet.ts";
+import {useNavigate} from "react-router-dom";
 
 interface Props {
     log: CalorieLogDTO;
@@ -8,9 +9,12 @@ interface Props {
 
 export const HistoryDayCard = ({ log, goal }: Props) => {
     const date = new Date(log.date);
+    const navigate = useNavigate();
 
     return (
-        <div className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between group hover:border-blue-200 transition-colors cursor-pointer">
+        <div
+            onClick={() => navigate(`/calories/day/${log.date}`)}
+            className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between group hover:border-blue-200 transition-colors cursor-pointer">
             <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center ${log.totalCalories > goal ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
                     <span className="text-[10px] font-black uppercase leading-none">{date.toLocaleDateString('en-US', { month: 'short' })}</span>

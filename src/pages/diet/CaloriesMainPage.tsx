@@ -85,8 +85,6 @@ const CaloriesMainPage = () => {
     };
 
     const calorieGoal = 2500;
-    const calorieProgress = Math.min(((dailyLog?.totalCalories || 0) / calorieGoal) * 100, 100);
-
     return (
         <MainDashboardLayout user={user} activePath="/calories" title="Fuel your journey">
 

@@ -45,23 +45,23 @@ export const CreateFoodModal = ({
 
                     <div className="grid grid-cols-2 gap-4">
                         <InputGroup label="Serving Size" type="number" placeholder="100"
-                                    value={formData.servingSize} onChange={(val) => handleChange("servingSize", Number(val))} />
+                                    value={formData.servingSize} onChange={(val: number) => handleChange("servingSize", Number(val))} />
                         <InputGroup label="Unit" placeholder="g / ml"
-                                    value={formData.servingUnit} onChange={(val) => handleChange("servingUnit", val)} />
+                                    value={formData.servingUnit} onChange={(val: string) => handleChange("servingUnit", val)} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 border-t border-slate-50 pt-4">
                         <InputGroup label="Calories (kcal)" type="number"
-                                    value={formData.calories} onChange={(val) => handleChange("calories", Number(val))} />
+                                    value={formData.calories} onChange={(val: number) => handleChange("calories", Number(val))} />
                         <InputGroup label="Protein (g)" type="number"
-                                    value={formData.protein} onChange={(val) => handleChange("protein", Number(val))} />
+                                    value={formData.protein} onChange={(val: number) => handleChange("protein", Number(val))} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <InputGroup label="Carbohydrates (g)" type="number"
-                                    value={formData.carbs} onChange={(val) => handleChange("carbs", Number(val))} />
+                                    value={formData.carbs} onChange={(val: number) => handleChange("carbs", Number(val))} />
                         <InputGroup label="Fats (g)" type="number"
-                                    value={formData.fats} onChange={(val) => handleChange("fats", Number(val))} />
+                                    value={formData.fats} onChange={(val: number) => handleChange("fats", Number(val))} />
                     </div>
                 </div>
 
