@@ -45,17 +45,18 @@ const LoginPage:React.FC = () => {
 
     return (
         <AuthLayout title={"Sign in"}
-                    subTitle={"Good to see you back!"} icon={<LogIn size={32}/>}>
+                    subTitle={"Good to see you back!"}
+                    icon={<LogIn size={32} className="text-blue-500 dark:text-blue-400" />}>
             <div>
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
                     <input {...register("username")} placeholder="Your username"
-                           className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                                                     className="border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 dark:text-white transition-colors"/>
 
                     <input {...register("password")} type="password" placeholder="Password"
-                           className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                           className="border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 dark:text-white transition-colors"/>
 
                     <button type="submit" disabled={isSubmitting}
-                            className="bg-blue-500 text-white p-3 rounded text-lg hover:bg-blue-700 transition duration-500 ease-in-out disabled:opacity-50">
+                            className="bg-blue-600 dark:bg-blue-500 text-white p-3 rounded-xl text-lg font-bold hover:bg-blue-700 dark:hover:bg-blue-600 transition duration-300 ease-in-out disabled:opacity-50 mt-2 shadow-lg shadow-blue-500/20">
                         {isSubmitting ? "Signing in..." : "Sign in"}
                     </button>
                 </form>
