@@ -68,37 +68,40 @@ const RegisterPage:React.FC = ()=> {
         )
     }
 
+    const inputClasses = "w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 dark:text-white transition-colors placeholder:text-gray-400 dark:placeholder:text-slate-500";
+
     return (
         <AuthLayout
             title={"Register"}
-        subTitle={"Your journey starts here!"}
-        icon={<UserPlus size={32}/>}>
+            subTitle={"Your journey starts here!"}
+            icon={<UserPlus size={32}/>}>
+
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
                 <input {...register("username")} placeholder="Name"
-                 className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                 className={inputClasses}/>
 
                 <input {...register("email")} type={"email"} placeholder="Email address"
-                       className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                       className={inputClasses}/>
                 {errors.email && <p className="text-red-600">{errors.email.message}</p>}
 
                 <input {...register("birthday")} type={"date"} placeholder="Birthday"
-                       className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                       className={inputClasses}/>
                 {errors.birthday && <p className="text-red-600">{errors.birthday.message}</p>}
 
                 <input type={"password"} {...register("password")} placeholder="Password"
-                       className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                       className={inputClasses}/>
                 {errors.password && <p className="text-red-600">{errors.password.message}</p>}
 
                 <input {...register("confirmPassword")} type={"password"}  placeholder="Confirm password"
-                       className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                       className={inputClasses}/>
                 {errors.confirmPassword && <p className="text-red-600">{errors.confirmPassword.message}</p>}
 
                 <input  {...register("weight", { valueAsNumber: true })} type="number" min={10} max={500} placeholder="Weight (optional)"
-                       className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                       className={inputClasses}/>
                 {errors.weight && <p className="text-red-600">{errors.weight.message}</p>}
 
                 <input  {...register("height", { valueAsNumber: true })} type="number" min={10} max={300}  placeholder="Height (optional)"
-                       className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                       className={inputClasses}/>
                 {errors.height && <p className="text-red-600">{errors.height.message}</p>}
 
                 <button type="submit" disabled={isSubmitting}
