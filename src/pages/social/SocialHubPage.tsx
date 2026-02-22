@@ -116,7 +116,7 @@ const SocialHubPage = () => {
         <MainDashboardLayout user={user} title={'Social hub'} activePath={'/friends'}>
             <div className="w-full mx-auto flex flex-col lg-flex-row gap-8 p-4">
                 <div className="flex-1 space-y-6">
-                    <div className="flex bg-slate-100 p-1.5 rounded-2xl w-fit">
+                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl w-fit">
                         <TabButton
                             active={activeTab === 'mine'}
                             onClick={() => setActiveTab('mine')}
@@ -143,8 +143,7 @@ const SocialHubPage = () => {
                             <div className="relative mb-6">
                                 <Search className="absolute left-4 top-4 text-slate-400" size={20} />
                                 <input
-                                    className="w-full bg-white border border-slate-200 rounded-2xl p-4 pl-12 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                                    placeholder="Search by name or email..."
+                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 pl-12 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm dark:text-white transition-colors"                                    placeholder="Search by name or email..."
                                     onChange={(e) => setSearch(e.target.value)}
                                 />
                             </div>
@@ -152,8 +151,7 @@ const SocialHubPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {renderList()}
                             {renderList().length === 0 && (
-                                <div className="col-span-full py-12 text-center text-slate-400 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl">
-                                    No athletes found here yet.
+                                <div className="col-span-full py-12 text-center text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/50 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl transition-colors">                                    No athletes found here yet.
                                 </div>
                             )}
                         </div>
@@ -161,7 +159,7 @@ const SocialHubPage = () => {
                 </div>
 
                 <aside className="hidden lg:block w-80 space-y-6">
-                    <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-lg">
+                    <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-lg shadow-blue-500/20">
                         <h3 className="font-bold text-lg mb-2">Community Stats</h3>
                         <div className="space-y-3 opacity-90">
                             <div className="flex justify-between text-sm">
@@ -184,7 +182,9 @@ const TabButton = ({active, onClick, icon, label, badge}: any) => (
     <button
         onClick={onClick}
         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-            active ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            active ? 
+            "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm"
+            : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
         }`}
     >
         {icon} {label}
@@ -204,12 +204,24 @@ const SocialCard = ({type, name, info, onAction}: any) => (
             </div>
         </div>
 
-        {type === 'mine' && <button onClick={onAction} className="p-2 text-slate-300 hover:text-blue-500"><MessageCircle size={20}/></button>}
-        {type === 'search' && <button onClick={onAction} className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl"><UserPlus size={20}/></button>}
+        {type === 'mine' && (
+            <button onClick={onAction} className="p-2 text-slate-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                <MessageCircle size={20}/>
+            </button>
+        )}
+        {type === 'search' && (
+            <button onClick={onAction} className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors">
+                <UserPlus size={20}/>
+            </button>
+        )}
         {type === 'requests' && (
             <div className="flex gap-2">
-                <button onClick={onAction} className="p-2 bg-blue-600 text-white rounded-xl"><UserCheck size={18}/></button>
-                <button className="p-2 bg-slate-100 text-slate-400 rounded-xl">×</button>
+                <button onClick={onAction} className="p-2 bg-blue-600 dark:bg-blue-500 text-white rounded-xl hover:bg-blue-700 transition-colors">
+                    <UserCheck size={18}/>
+                </button>
+                <button className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-colors">
+                    ×
+                </button>
             </div>
         )}
     </div>

@@ -95,71 +95,71 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
     };
 
     return (
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 mb-6 transition-all duration-300">
             <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 bg-blue-600 dark:bg-blue-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg shadow-blue-100 dark:shadow-none">
                         {post.userName.charAt(0).toUpperCase() || "U"}
                     </div>
                     <div>
-                        <p className="font-bold text-slate-800">{post.userName || "User"}</p>
-                        <div className="flex items-center gap-1 text-slate-400 text-xs">
+                        <p className="font-bold text-slate-800 dark:text-slate-100">{post.userName || "User"}</p>
+                        <div className="flex items-center gap-1 text-slate-400 dark:text-slate-500 text-xs font-medium">
                             <Clock size={12} />
                             {new Date(post.sentTime).toLocaleDateString()}
                         </div>
                     </div>
                 </div>
                 {post.userId === currentUserId && (
-                    <button onClick={() => onDelete(post.id)} className="text-slate-300 hover:text-red-500 transition-colors">
+                    <button onClick={() => onDelete(post.id)} className="text-slate-300 dark:text-slate-700 hover:text-red-500 transition-colors">
                         <Trash2 size={18} />
                     </button>
                 )}
             </div>
 
-            <p className="text-slate-600 leading-relaxed mb-4">{post.content}</p>
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">{post.content}</p>
 
             {post.imageUrl && (
-                <div className="mt-4 mb-4 rounded-2xl overflow-hidden border border-slate-100 bg-slate-50">
-                    <SecureImage filename={post.imageUrl} alt={"post picture"}></SecureImage>
+                <div className="mt-4 mb-4 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                    <SecureImage filename={post.imageUrl} alt={"post picture"} />
                 </div>
             )}
 
-            <div className="flex gap-4 pt-4 border-t border-slate-50">
+            <div className="flex gap-6 pt-4 border-t border-slate-50 dark:border-slate-800">
                 <button
                     onClick={handleLike}
-                    className={`flex items-center gap-2 transition-colors text-sm font-medium ${
-                            liked ? 'text-red-500' : 'text-slate-500 hover:text-red-500'
-                        }`}>
+                    className={`flex items-center gap-2 transition-colors text-sm font-bold ${
+                        liked ? 'text-red-500' : 'text-slate-500 dark:text-slate-400 hover:text-red-500'
+                    }`}>
                     <Heart size={18}
                            fill={liked ? "currentColor" : "none"}
-                           className={`transition-transform duration-200 ${
-                               liked ? "scale-125" : "scale-100"
-                           }`} /> Like
-                    <span className={"tabular-nums"}>{likeCount}</span>
+                           className={`transition-transform duration-200 ${liked ? "scale-110" : "scale-100"}`} />
+                    <span className="tabular-nums">{likeCount}</span>
                 </button>
                 <button
                     onClick={() => setShowComments(!showComments)}
-                    className={`flex items-center gap-2 transition-colors text-sm font-medium ${showComments ? 'text-blue-600' : 'text-slate-500 hover:text-blue-600'}`}
+                    className={`flex items-center gap-2 transition-colors text-sm font-bold ${
+                        showComments ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-blue-600'
+                    }`}
                 >
                     <MessageSquare size={18} /> Comment
                 </button>
             </div>
 
             {showComments && (
-                <div className="mt-4 pt-4 border-t border-slate-50 space-y-4">
+                <div className="mt-4 pt-4 border-t border-slate-50 dark:border-slate-800 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="space-y-3">
                         {comments.map((comment) => (
                             <div key={comment.id} className="flex gap-3 items-start group">
-                                <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 text-xs font-bold">
+                                <div className="w-8 h-8 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 text-xs font-black">
                                     {comment.userName.charAt(0).toUpperCase()}
                                 </div>
-                                <div className="flex-1 bg-slate-50 rounded-2xl px-4 py-2 relative">
-                                    <p className="font-bold text-xs text-slate-800">{comment.userName}</p>
-                                    <p className="text-sm text-slate-600">{comment.content}</p>
+                                <div className="flex-1 bg-slate-50 dark:bg-slate-800 rounded-2xl px-4 py-2 relative">
+                                    <p className="font-bold text-xs text-slate-800 dark:text-slate-200">{comment.userName}</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">{comment.content}</p>
                                     {comment.userId === currentUserId && (
                                         <button
                                             onClick={() => handleDeleteComment(comment.id)}
-                                            className="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute top-2 right-2 text-slate-300 dark:text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                                         >
                                             <Trash2 size={14} />
                                         </button>
@@ -175,13 +175,13 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="Write a comment..."
-                            className="flex-1 bg-slate-100 rounded-xl px-4 py-2 text-sm outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                            className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all border border-transparent dark:border-slate-700 placeholder:text-slate-400 dark:placeholder:text-slate-600"
                             onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
                         />
                         <button
                             onClick={handleAddComment}
                             disabled={!newComment.trim()}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors disabled:opacity-30"
+                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-full transition-colors disabled:opacity-30"
                         >
                             <Send size={18} />
                         </button>
