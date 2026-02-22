@@ -131,27 +131,25 @@ const WorkoutMainPage = () => {
 
             {isModalOpen && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 border border-slate-100">
-                        <h2 className="text-2xl font-bold text-slate-800 mb-2">New Session</h2>
-                        <p className="text-slate-500 text-sm mb-6">What are we training today?</p>
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl p-6 border border-slate-100 dark:border-slate-800 transition-colors">
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">New Session</h2>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">What are we training today?</p>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Workout
-                                    Name</label>
+                                <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase ml-1">Workout Name</label>
                                 <input
                                     autoFocus
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition"
                                     placeholder="e.g: Push Day / Cardio"
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                 />
                             </div>
                             <div>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Notes /
-                                    Description</label>
+                                <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase ml-1">Notes / Description</label>
                                 <textarea
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 transition h-24 resize-none"
+                                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition h-24 resize-none"
                                     placeholder="Focus on slow eccentrics..."
                                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                                 />
@@ -161,13 +159,13 @@ const WorkoutMainPage = () => {
                         <div className="flex gap-3 mt-8">
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="flex-1 py-3 text-slate-500 font-semibold hover:bg-slate-50 rounded-xl transition"
+                                className="flex-1 py-3 text-slate-500 dark:text-slate-400 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleConfirmStart}
-                                className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:shadow-blue-200 hover:bg-blue-700 transition"
+                                className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition"
                             >
                                 Start Session
                             </button>
@@ -185,15 +183,15 @@ const WorkoutMainPage = () => {
                             setIsModalOpen(true);
                         }
                     }}
-                    className={`w-full rounded-2xl p-4 flex flex-col items-center justify-center transition-all hover:scale-[0.98] shadow-lg mb-8 ${
+                    className={`w-full rounded-2xl p-6 flex flex-col items-center justify-center transition-all hover:scale-[0.98] shadow-lg mb-8 text-white ${
                         ongoingWorkout
-                            ? "bg-green-600 hover:bg-green-700 shadow-green-100"
-                            : "bg-blue-600 hover:bg-blue-700 shadow-blue-100"
+                            ? "bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:shadow-green-900/20"
+                            : "bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:shadow-blue-900/20"
                     }`}
                 >
                     {ongoingWorkout ? (
                         <>
-                            <Play size={32} fill="currentColor" className="animate-pulse"/>
+                            <Play size={32} fill="currentColor" className="animate-pulse mb-2"/>
                             <span className="text-xl font-bold uppercase tracking-wide">Continue Workout</span>
                             <span className="text-[10px] opacity-80 font-medium italic mt-1">
                                 Currently tracking: {ongoingWorkout.name}
@@ -201,60 +199,58 @@ const WorkoutMainPage = () => {
                         </>
                     ) : (
                         <>
-                            <Play size={32} fill="currentColor"/>
+                            <Play size={32} fill="currentColor" className="mb-2"/>
                             <span className="text-xl font-bold uppercase tracking-wide">Start New Workout</span>
                         </>
                     )}
                 </button>
+
                 <section className="mt-8">
                     <div className="flex justify-between items-end mb-4 px-1">
-                        <h2 className="font-bold text-slate-800">Recent Activity</h2>
+                        <h2 className="font-bold text-slate-800 dark:text-white">Recent Activity</h2>
                         <button
                             onClick={() => navigate('/workouts/history')}
-                            className="text-xs font-bold text-blue-600 hover:underline"
+                            className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
                         >
                             View All History
                         </button>
                     </div>
 
-                    <div className="space-y-3 mb-2.5">
+                    <div className="space-y-3 mb-8">
                         {history.slice(0, 3).map(workout => (
                             <div
                                 key={workout.id}
                                 onClick={() => navigate(`/workouts/session/${workout.id}`)}
-                                className="bg-white/60 p-4 rounded-2xl border border-slate-100 flex justify-between items-center"
+                                className="bg-white/60 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex justify-between items-center cursor-pointer hover:border-blue-400 transition-colors"
                             >
-                                <span className="font-bold text-slate-700 text-sm">{workout.name}</span>
-                                <span
-                                    className="text-xs text-slate-400">{new Date(workout.startDate).toLocaleDateString()}</span>
+                                <span className="font-bold text-slate-700 dark:text-white text-sm">{workout.name}</span>
+                                <span className="text-xs text-slate-400 dark:text-slate-500">{new Date(workout.startDate).toLocaleDateString()}</span>
                             </div>
                         ))}
                     </div>
                 </section>
-                <section className="bg-white p-4 rounded-xl shadow-sm border border-slate-100  mb-8">
-                    <div className="flex items-center gap-2 mb-4 text-slate-600">
+
+                <section className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-8 transition-colors">
+                    <div className="flex items-center gap-2 mb-4 text-slate-600 dark:text-slate-400">
                         <Calendar size={20}/>
                         <h2 className="font-semibold">Consistency</h2>
                     </div>
 
-                    <div
-                        className="w-full bg-slate-50 rounded flex items-center justify-center text-slate-400 border border-dashed border-slate-200">
+                    <div className="w-full bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-center p-2 text-slate-400 border border-dashed border-slate-200 dark:border-slate-800">
                         <FitnessHeatMap data={transformHistoryToHeatMap(history)}/>
                     </div>
                 </section>
 
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div
-                        className="bg-orange-200 p-4 rounded-xl border border-orange-100 transition hover:scale-105 duration-200">
+                    <div className="bg-orange-100 dark:bg-orange-900/20 p-4 rounded-2xl border border-orange-200 dark:border-orange-900/30 transition hover:scale-105 duration-200">
                         <Flame className="text-orange-500 mb-1" size={24}/>
-                        <p className="text-sm text-orange-800">Streak</p>
-                        <p className="text-2xl font-bold text-orange-900">{calculateStreak()} Days</p>
+                        <p className="text-sm text-orange-800 dark:text-orange-300">Streak</p>
+                        <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{calculateStreak()} Days</p>
                     </div>
-                    <div
-                        className="bg-blue-200 p-4 rounded-xl border border-blue-100 transition hover:scale-105 duration-200">
+                    <div className="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-200 dark:border-blue-900/30 transition hover:scale-105 duration-200">
                         <BarChart3 className="text-blue-500 mb-1" size={24}/>
-                        <p className="text-sm text-blue-800">This Week</p>
-                        <p className="text-2xl font-bold text-blue-900">{calculateSetsThisWeek()} Sets</p>
+                        <p className="text-sm text-blue-800 dark:text-blue-300">This Week</p>
+                        <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{calculateSetsThisWeek()} Sets</p>
                     </div>
                 </div>
             </div>

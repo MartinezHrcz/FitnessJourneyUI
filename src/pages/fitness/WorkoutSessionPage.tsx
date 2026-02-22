@@ -30,7 +30,7 @@ const WorkoutSessionPage = () => {
     if (!workout) return <div className="p-8 text-center">Loading session...</div>;
 
     return (
-        <MainDashboardLayout user={user} title={"Workout"} activePath={"workouts"}>
+        <MainDashboardLayout user={user} title={"Workout"} activePath={"workouts"} removePadding={true}>
             {workout?.status === 'ONGOING' ?
                 <ActiveWorkoutSession workout={workout} setWorkout={setWorkout} /> : <FinishedWorkoutSession workout={workout} />
             }

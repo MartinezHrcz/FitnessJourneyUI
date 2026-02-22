@@ -1,10 +1,12 @@
 import HeatMap from '@uiw/react-heat-map';
+import {useTheme} from "../hooks/useTheme.ts";
 
 interface HeatMapProps {
     data: {date: string, count: number}[];
 }
 
 const FitnessHeatmap = ({data}:HeatMapProps) => {
+    const { isDark } = useTheme();
     const thisYear = new Date().setMonth(0, 1);
 
     return (
@@ -28,6 +30,13 @@ const FitnessHeatmap = ({data}:HeatMapProps) => {
                     }}
                 />
             </div>
+            <style>{`
+                svg text {
+                    fill: ${isDark ? 'white' : 'black'} !important;
+                    font-size: 10px;
+                    font-weight: 500;
+                }
+            `}</style>
         </div>
     );
 };
