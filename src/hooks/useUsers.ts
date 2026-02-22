@@ -1,6 +1,6 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {userApi} from "../api/users/userApi.ts";
-import type {updateUserDTO} from "../types/User.ts";
+import type {updateUser} from "../types/User.ts";
 
 export function useUsers() {
 
@@ -13,7 +13,7 @@ export function useUsers() {
 
     const updateUser = useMutation(
         {
-            mutationFn: ({id, data} : {id:string, data:updateUserDTO}) =>
+            mutationFn: ({id, data} : {id:string, data:updateUser}) =>
                 userApi.updateUser(id, data).then(res => res.data),
         }
     );
