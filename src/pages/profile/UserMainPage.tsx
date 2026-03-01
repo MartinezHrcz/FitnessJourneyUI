@@ -5,6 +5,7 @@ import type {PostDto} from "../../types/social/Post.ts";
 import {postApi} from "../../api/posts/postApi.ts";
 import {Send, Image as ImageIcon, X} from "lucide-react";
 import {PostCard} from "../../components/PostCard.tsx";
+import {Alert} from "../../components/AlertDialog.tsx";
 
 const UserMainPage:React.FC = () =>{
 
@@ -13,20 +14,30 @@ const UserMainPage:React.FC = () =>{
     const [newPostContent, setNewPostContent] = useState("");
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            setSelectedImage(file);
 
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewUrl(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+        if (!file) return;
 
+        if (file.size > MAX_FILE_SIZE) {
+            setError("This file is too large. Please upload an image smaller than 5MB.");
             e.target.value = "";
+            return;
         }
+
+        setSelectedImage(file);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+
+        e.target.value = "";
     };
 
     useEffect(() => {
@@ -91,6 +102,14 @@ const UserMainPage:React.FC = () =>{
     return (
         <MainDashboardLayout user={user} title={"Dashboard"} activePath={"/dashboard"}>
             <div className="max-w-2xl mx-auto py-4 px-2">
+
+                {error && (
+                    <Alert
+                        message={error}
+                        type="error"
+                        onClose={() => setError(null)}
+                    />
+                )}
 
                 <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-md border border-slate-100 dark:border-slate-800 mb-8 transition-colors">
                     <div className="flex gap-4">
