@@ -56,7 +56,7 @@ const AddExerciseModal = ({isOpen, onClose, onSelect, exercises}: Props) => {
                                 onClick={() => {
                                     onSelect(ex.id);
                                     onClose();
-                                    setSearch(""); // Reset search on select
+                                    setSearch("");
                                 }}
                                 className="w-full flex items-center justify-between p-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-2xl border border-transparent hover:border-blue-100 dark:hover:border-blue-800/50 transition-all text-left group"
                             >

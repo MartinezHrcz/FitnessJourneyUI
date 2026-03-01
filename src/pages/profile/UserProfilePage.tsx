@@ -4,21 +4,28 @@ import {User, Mail, Calendar, Ruler, Scale, ShieldCheck, Settings, Moon, Sun} fr
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useTheme} from "../../hooks/useTheme.ts";
+import {friendApi} from "../../api/friends/friendApi.ts";
+import type {FriendDTO} from "../../types/social/Friend.ts";
 
 
 const UserProfilePage = () => {
 
     const [user,setUser]=useState<user | null>(null);
     const [activeTab, setActiveTab] = useState<"profile" | "settings">("profile");
+    const [friends, setFriends] = useState<FriendDTO[]>([]);
     const { isDark, toggleTheme } = useTheme();
     const navigate = useNavigate();
 
-    useEffect(()=>{
+    useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        if (storedUser){
-            setUser(JSON.parse(storedUser) as user);
+        if (storedUser) {
+            const parsed = JSON.parse(storedUser);
+            setUser(parsed);
+            friendApi.getFriendsOfUser(parsed.id).then(res => {
+                setFriends(res.data.filter(f => f.status === 'ACCEPTED'));
+            });
         }
-    }, [])
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -83,6 +90,26 @@ const UserProfilePage = () => {
                                 <InfoRow icon={<Calendar size={18}/>} label="Birthday" value={`${new Date(user.birthday).toLocaleDateString()} (${age} years)`} />
                             </div>
                         </section>
+
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-slate-800 dark:text-white px-2">Friends ({friends.length})</h3>
+                            <div className="grid grid-cols-1 gap-3">
+                                {friends.map(f => (
+                                    <div key={f.id} className="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center font-bold text-blue-600">
+                                            {f.friendName.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-slate-800 dark:text-white">{f.friendName}</p>
+                                            <p className="text-[10px] text-slate-400 uppercase font-bold">{f.friendEmail}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                {friends.length === 0 && (
+                                    <p className="text-center py-6 text-slate-400 text-sm italic">No friends added yet.</p>
+                                )}
+                            </div>
+                        </div>
                     </>
                 ) : (
                     <section className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden animate-in fade-in duration-300">
