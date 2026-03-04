@@ -245,30 +245,34 @@ const WorkoutMainPage = () => {
                         </button>
                     </div>
 
-                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                        <div
-                            onClick={() => navigate('/workouts/plans/create')}
-                            className="min-w-[140px] h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all cursor-pointer"
-                        >
-                            <Plus size={24} />
-                            <span className="text-xs font-bold mt-2">New Plan</span>
-                        </div>
-
-                        {plans.map(plan => (
-                            <div
-                                key={plan.id}
-                                onClick={() => handleStartFromPlan(plan.id)}
-                                className="min-w-[200px] h-32 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-blue-500 transition-all cursor-pointer"
-                            >
-                                <div>
-                                    <h3 className="font-bold text-slate-800 dark:text-white text-sm line-clamp-1">{plan.name}</h3>
-                                    <p className="text-[10px] text-slate-400 mt-1">{plan.exercises.length} Exercises</p>
+                    <div className="relative">
+                        <div className="absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white dark:from-slate-950 to-transparent pointer-events-none" />
+                            <div className="flex p-6 gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                                <div
+                                    onClick={() => navigate('/workouts/plans/create')}
+                                    className="min-w-[140px] h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all cursor-pointer"
+                                >
+                                    <Plus size={24} />
+                                    <span className="text-xs font-bold mt-2">New Plan</span>
                                 </div>
-                                <button className="flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase">
-                                    <Play size={10} fill="currentColor" /> Start Plan
-                                </button>
+
+                                {plans.map(plan => (
+                                    <div
+                                        key={plan.id}
+                                        onClick={() => handleStartFromPlan(plan.id)}
+                                        className="min-w-[200px] h-32 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-blue-500 transition-all cursor-pointer"
+                                    >
+                                        <div>
+                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm line-clamp-1">{plan.name}</h3>
+                                            <p className="text-[10px] text-slate-400 mt-1">{plan.exercises.length} Exercises</p>
+                                        </div>
+                                        <button className="flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase">
+                                            <Play size={10} fill="currentColor" /> Start Plan
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                        <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-white dark:from-slate-950 to-transparent pointer-events-none" />
                     </div>
                 </section>
 
