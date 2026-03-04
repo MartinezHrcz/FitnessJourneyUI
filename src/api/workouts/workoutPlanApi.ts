@@ -6,7 +6,7 @@ import type {
 
 export const workoutPlanApi = {
     getAvailable: () =>
-        axiosClient.get<WorkoutPlanDTO[]>(`/workout-plan/available/me`),
+        axiosClient.get<WorkoutPlanDTO[]>(`/workout-plan/available`),
 
     getById: (id: string) =>
         axiosClient.get<WorkoutPlanDTO>(`/workout-plan/${id}`),

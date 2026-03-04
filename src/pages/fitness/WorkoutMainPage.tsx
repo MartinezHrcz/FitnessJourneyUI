@@ -1,11 +1,14 @@
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import {useEffect, useState} from "react";
 import type {user} from "../../types/User.ts";
-import {BarChart3, Calendar, Flame, Play} from "lucide-react";
+import {BarChart3, Calendar, Flame, Play, Plus} from "lucide-react";
 import FitnessHeatMap from "../../components/FitnessHeatMap.tsx";
 import type {WorkoutCreateDTO, WorkoutDTO} from "../../types/fitness/Workout.ts";
 import {workoutApi} from "../../api/workouts/workoutApi.ts";
 import {useNavigate} from "react-router-dom";
+import {workoutPlanApi} from "../../api/workouts/workoutPlanApi.ts";
+import type {WorkoutPlanDTO} from "../../types/fitness/WorkoutPlan.ts";
+import {Alert} from "../../components/AlertDialog.tsx";
 
 const WorkoutMainPage = () => {
     const navigate = useNavigate();
@@ -18,6 +21,8 @@ const WorkoutMainPage = () => {
 
     const [history, setHistory] = useState<WorkoutDTO[]>([]);
     const [ongoingWorkout, setOngoingWorkout] = useState<WorkoutDTO | null>(null);
+    const [plans, setPlans] = useState<WorkoutPlanDTO[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -41,6 +46,12 @@ const WorkoutMainPage = () => {
         }
     }, [])
 
+    useEffect(() => {
+        workoutPlanApi.getAvailable().then((res) => {
+            setPlans(res.data);
+        }).catch(err => console.error("Failed to load plans", err));
+    }, [])
+
     const handleConfirmStart = async () => {
         if (!user) return;
 
@@ -57,9 +68,19 @@ const WorkoutMainPage = () => {
             })
         } catch (err) {
             console.log(err);
-            alert("Error creating Workout!");
+            setError("Failed to create workout!.");
         }
     }
+
+    const handleStartFromPlan = async (planId: string) => {
+        try {
+            const response = await workoutPlanApi.startWorkoutFromPlan(planId);
+            const newWorkoutId = response.data;
+            navigate(`/workouts/session/${newWorkoutId}`);
+        } catch {
+            setError("Failed to start workout!.");
+        }
+    };
 
     const transformHistoryToHeatMap = (workout: WorkoutDTO[]) => {
         const counts: { [key: string]: number } = {};
@@ -128,6 +149,14 @@ const WorkoutMainPage = () => {
 
     return (
         <MainDashboardLayout user={user} activePath={"/workouts"} title={"Your fitness starts here!"}>
+
+            {error && (
+                <Alert
+                    message={error}
+                    type="error"
+                    onClose={() => setError(null)}
+                />
+            )}
 
             {isModalOpen && (
                 <div
@@ -204,6 +233,44 @@ const WorkoutMainPage = () => {
                         </>
                     )}
                 </button>
+
+                <section className="mt-8">
+                    <div className="flex justify-between items-end mb-4 px-1">
+                        <h2 className="font-bold text-slate-800 dark:text-white">Workout Plans</h2>
+                        <button
+                            onClick={() => navigate('/workouts/plans')}
+                            className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                            Manage Plans
+                        </button>
+                    </div>
+
+                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                        <div
+                            onClick={() => navigate('/workouts/plans/create')}
+                            className="min-w-[140px] h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all cursor-pointer"
+                        >
+                            <Plus size={24} />
+                            <span className="text-xs font-bold mt-2">New Plan</span>
+                        </div>
+
+                        {plans.map(plan => (
+                            <div
+                                key={plan.id}
+                                onClick={() => handleStartFromPlan(plan.id)}
+                                className="min-w-[200px] h-32 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-blue-500 transition-all cursor-pointer"
+                            >
+                                <div>
+                                    <h3 className="font-bold text-slate-800 dark:text-white text-sm line-clamp-1">{plan.name}</h3>
+                                    <p className="text-[10px] text-slate-400 mt-1">{plan.exercises.length} Exercises</p>
+                                </div>
+                                <button className="flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase">
+                                    <Play size={10} fill="currentColor" /> Start Plan
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </section>
 
                 <section className="mt-8">
                     <div className="flex justify-between items-end mb-4 px-1">
