@@ -122,13 +122,13 @@ const ActiveWorkoutSession = ({workout, setWorkout}: ActiveWorkoutProps) =>{
             default:
                 return (
                     <>
-                        <input id={`${prefix}-reps`}
+                        <input id={`${prefix}-weight`}
                                type="number"
                                className={inputClass}
                                placeholder="kg"
                                onChange={() => handleInputChange(set.id)}
                                defaultValue={set.weight}/>
-                        <input id={`${prefix}-weight`}
+                        <input id={`${prefix}-reps`}
                                type="number"
                                className={inputClass}
                                placeholder="reps"

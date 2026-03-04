@@ -17,7 +17,6 @@ export interface PlanExerciseRequestDTO {
 }
 
 export interface WorkoutPlanCreateDTO extends AbstractWorkoutPlanDTO {
-    userId: string;
     exercises: PlanExerciseRequestDTO[];
 }
 
