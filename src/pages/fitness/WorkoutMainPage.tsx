@@ -9,6 +9,7 @@ import {useNavigate} from "react-router-dom";
 import {workoutPlanApi} from "../../api/workouts/workoutPlanApi.ts";
 import type {WorkoutPlanDTO} from "../../types/fitness/WorkoutPlan.ts";
 import {Alert} from "../../components/AlertDialog.tsx";
+import {WorkoutPlanCard} from "../../components/WorkoutPlanCard.tsx";
 
 const WorkoutMainPage = () => {
     const navigate = useNavigate();
@@ -28,6 +29,10 @@ const WorkoutMainPage = () => {
     const filteredPlans = showOnlyMyPlans
         ? plans.filter(plan => plan.creatorId === user?.id)
         : plans;
+
+    const sortedHistory = [...history].sort((a, b) =>
+        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+    );
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -264,7 +269,7 @@ const WorkoutMainPage = () => {
 
                     <div className="relative">
                         <div className="absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white dark:from-slate-950 to-transparent pointer-events-none" />
-                            <div className="flex p-6 gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                            <div className="flex p-5 gap-4 overflow-x-auto pb-2 scrollbar-hide">
                                 <div
                                     onClick={() => navigate('/workouts/plans/create')}
                                     className="min-w-[140px] h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all cursor-pointer"
@@ -273,22 +278,7 @@ const WorkoutMainPage = () => {
                                     <span className="text-xs font-bold mt-2">New Plan</span>
                                 </div>
                                 {filteredPlans.map(plan => (
-                                    <div
-                                        key={plan.id}
-                                        onClick={() => handleStartFromPlan(plan.id)}
-                                        className="min-w-[200px] h-32 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-blue-500 transition-all cursor-pointer"
-                                    >
-                                        <div>
-                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm line-clamp-1">{plan.name}</h3>
-                                            <p className="text-[10px] text-slate-400 mt-1">{plan.exercises.length} Exercises</p>
-                                            {plan.creatorId === user?.id && (
-                                                <span className="text-[8px] bg-blue-100 dark:bg-blue-900/40 text-blue-600 px-1.5 rounded-md">Personal</span>
-                                            )}
-                                        </div>
-                                        <button className="flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase">
-                                            <Play size={10} fill="currentColor" /> Start Plan
-                                        </button>
-                                    </div>
+                                    <WorkoutPlanCard key={plan.id} plan={plan} onStart={() => handleStartFromPlan(plan.id)} currentUserId={user?.id}/>
                                 ))}
                             </div>
                         <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-white dark:from-slate-950 to-transparent pointer-events-none" />
@@ -307,7 +297,7 @@ const WorkoutMainPage = () => {
                     </div>
 
                     <div className="space-y-3 mb-8">
-                        {history.slice(0, 3).map(workout => (
+                        {sortedHistory.slice(0, 3).map(workout => (
                             <div
                                 key={workout.id}
                                 onClick={() => navigate(`/workouts/session/${workout.id}`)}

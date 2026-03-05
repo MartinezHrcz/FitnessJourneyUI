@@ -11,6 +11,9 @@ const WorkoutHistoryPage = () => {
     const navigate = useNavigate();
     const [history, setHistory] = useState<WorkoutDTO[]>([]);
     const [user, setUser] = useState<user | null>(null);
+    const sortedHistory = [...history].sort((a, b) =>
+        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+    );
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -39,13 +42,13 @@ const WorkoutHistoryPage = () => {
                 </button>
 
                 <div className="space-y-4">
-                    {history.length === 0 ? (
+                    {sortedHistory.length === 0 ? (
                         <div className="p-20 flex flex-col items-center bg-white dark:bg-slate-900/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 transition-colors">
                             <History size={48} className="text-slate-300 dark:text-slate-700 mb-4" />
                             <h2 className="text-slate-400 dark:text-slate-500 text-center font-medium">No workouts recorded yet.</h2>
                         </div>
                     ) : (
-                        history.map((workout) => (
+                        sortedHistory.map((workout) => (
                             <div
                                 key={workout.id}
                                 onClick={() => navigate(`/workouts/session/${workout.id}`)}
