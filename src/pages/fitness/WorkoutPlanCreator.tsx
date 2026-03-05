@@ -6,6 +6,8 @@ import { workoutPlanApi } from "../../api/workouts/workoutPlanApi";
 import { exerciseApi } from "../../api/exercises/exerciseApi";
 import type { AbstractExerciseDTO } from "../../types/fitness/Exercise";
 import type { PlanExerciseRequestDTO } from "../../types/fitness/WorkoutPlan";
+import defaultExerciseApi from "../../api/exercises/defaultExerciseApi.ts";
+import {Alert} from "../../components/AlertDialog.tsx";
 
 const WorkoutPlanCreator = () => {
     const navigate = useNavigate();
@@ -14,9 +16,21 @@ const WorkoutPlanCreator = () => {
     const [allExercises, setAllExercises] = useState<AbstractExerciseDTO[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedExercises, setSelectedExercises] = useState<PlanExerciseRequestDTO[]>([]);
+    const [error, setError] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-        exerciseApi.getAll().then(res => setAllExercises(res.data));
+        Promise.all([
+            defaultExerciseApi.getAll(),
+            exerciseApi.getAll()
+        ])
+            .then(([defaultRes, userRes]) => {
+                const combined = [...defaultRes.data, ...userRes.data];
+                setAllExercises(combined);
+            })
+            .catch(err => {
+                console.log(err);
+                setError("Failed to fetch allExercises");
+            });
     }, []);
 
     const handleAddFromModal = (exerciseId: string) => {
@@ -30,8 +44,13 @@ const WorkoutPlanCreator = () => {
     };
 
     const handleSave = async () => {
-        if (!name.trim() || selectedExercises.length === 0) {
-            alert("Please provide a name and at least one exercise.");
+        if (!name.trim()){
+            setError("Name cannot be empty!");
+            return;
+        }
+
+        if (selectedExercises.length === 0) {
+            setError("Please provide atleast 1 exercise");
             return;
         }
 
@@ -42,8 +61,9 @@ const WorkoutPlanCreator = () => {
                 exercises: selectedExercises
             });
             navigate("/workouts");
-        } catch (error) {
-            console.error("Save failed", error);
+        } catch (err) {
+            console.log(err);
+            setError("Failed to create workout plan!");
         }
     };
 
@@ -55,6 +75,12 @@ const WorkoutPlanCreator = () => {
                 onClose={() => setIsModalOpen(false)}
                 exercises={allExercises}
                 onSelect={handleAddFromModal}
+            />
+
+            <Alert
+                message={error}
+                type = "warning"
+                onClose={() => setError(undefined)}
             />
 
             <header className="flex items-center justify-between mb-8">

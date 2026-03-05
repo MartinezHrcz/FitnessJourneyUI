@@ -22,7 +22,7 @@ const WorkoutMainPage = () => {
     const [history, setHistory] = useState<WorkoutDTO[]>([]);
     const [ongoingWorkout, setOngoingWorkout] = useState<WorkoutDTO | null>(null);
     const [plans, setPlans] = useState<WorkoutPlanDTO[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -150,13 +150,11 @@ const WorkoutMainPage = () => {
     return (
         <MainDashboardLayout user={user} activePath={"/workouts"} title={"Your fitness starts here!"}>
 
-            {error && (
-                <Alert
-                    message={error}
-                    type="error"
-                    onClose={() => setError(null)}
-                />
-            )}
+            <Alert
+                message={error}
+                type="error"
+                onClose={() => setError(undefined)}
+            />
 
             {isModalOpen && (
                 <div
