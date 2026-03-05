@@ -7,5 +7,5 @@ export const workoutRoutes = [
     {path: "/workouts", element: <WorkoutMainPage />},
     {path: "/workouts/session/:id", element: <WorkoutSessionPage />},
     {path: "/workouts/history", element: <WorkoutHistoryPage />},
-    {path: "/workouts/plans", element: <WorkoutPlanCreator />}
+    {path: "/workouts/plans/create", element: <WorkoutPlanCreator />}
 ]

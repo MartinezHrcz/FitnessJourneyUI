@@ -23,6 +23,11 @@ const WorkoutMainPage = () => {
     const [ongoingWorkout, setOngoingWorkout] = useState<WorkoutDTO | null>(null);
     const [plans, setPlans] = useState<WorkoutPlanDTO[]>([]);
     const [error, setError] = useState<string | undefined>(undefined);
+    const [showOnlyMyPlans, setShowOnlyMyPlans] = useState(false);
+
+    const filteredPlans = showOnlyMyPlans
+        ? plans.filter(plan => plan.creatorId === user?.id)
+        : plans;
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -49,7 +54,10 @@ const WorkoutMainPage = () => {
     useEffect(() => {
         workoutPlanApi.getAvailable().then((res) => {
             setPlans(res.data);
-        }).catch(err => console.error("Failed to load plans", err));
+        }).catch(err => {
+            console.log(err);
+            setError("Failed to get fetch plans.");
+        });
     }, [])
 
     const handleConfirmStart = async () => {
@@ -243,6 +251,17 @@ const WorkoutMainPage = () => {
                         </button>
                     </div>
 
+                    <button
+                        onClick={() => setShowOnlyMyPlans(!showOnlyMyPlans)}
+                        className={`text-[10px] font-bold px-10 py-1 rounded-full border transition-all ${
+                            showOnlyMyPlans
+                                ? "bg-blue-600 border-blue-600 text-white"
+                                : "bg-transparent border-slate-300 dark:border-slate-700 text-slate-500"
+                        }`}
+                    >
+                        {showOnlyMyPlans ? "My Plans" : "All Plans"}
+                    </button>
+
                     <div className="relative">
                         <div className="absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white dark:from-slate-950 to-transparent pointer-events-none" />
                             <div className="flex p-6 gap-4 overflow-x-auto pb-2 scrollbar-hide">
@@ -253,8 +272,7 @@ const WorkoutMainPage = () => {
                                     <Plus size={24} />
                                     <span className="text-xs font-bold mt-2">New Plan</span>
                                 </div>
-
-                                {plans.map(plan => (
+                                {filteredPlans.map(plan => (
                                     <div
                                         key={plan.id}
                                         onClick={() => handleStartFromPlan(plan.id)}
@@ -263,6 +281,9 @@ const WorkoutMainPage = () => {
                                         <div>
                                             <h3 className="font-bold text-slate-800 dark:text-white text-sm line-clamp-1">{plan.name}</h3>
                                             <p className="text-[10px] text-slate-400 mt-1">{plan.exercises.length} Exercises</p>
+                                            {plan.creatorId === user?.id && (
+                                                <span className="text-[8px] bg-blue-100 dark:bg-blue-900/40 text-blue-600 px-1.5 rounded-md">Personal</span>
+                                            )}
                                         </div>
                                         <button className="flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase">
                                             <Play size={10} fill="currentColor" /> Start Plan
