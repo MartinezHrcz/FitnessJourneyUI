@@ -65,8 +65,8 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                     </h2>
 
                     <a href="/profile">
-                        <div className="flex items-center gap-4 dark:text-gray-300">
-                            Welcome back, <strong className="text-gray-900 dark:text-white font-semibold">{user?.name}</strong>
+                        <div className="flex items-center gap-1 dark:text-gray-300">
+                            <div className="hidden sm:block"> Welcome back,</div><strong className="text-gray-900 dark:text-white font-semibold">{user?.name}</strong>
                             <img
                                 src="https://placehold.co/300x300/indigo/white?text=User"
                                 alt="profile"
