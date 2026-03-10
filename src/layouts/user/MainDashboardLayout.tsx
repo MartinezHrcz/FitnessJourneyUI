@@ -60,13 +60,13 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
 
             <main className="flex-1 flex flex-col overflow-hidden">
                 <header className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 shadow-sm z-10 border-b border-gray-100 dark:border-slate-800 transition-colors">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white tracking-tight">
+                    <h2 className="lg:text-2xl max-md:text-m font-bold text-gray-800 dark:text-white tracking-tight">
                         {title}
                     </h2>
 
                     <a href="/profile">
-                        <div className="flex items-center gap-4 dark:text-gray-300">
-                            Welcome back, <strong className="text-gray-900 dark:text-white font-semibold">{user?.name}</strong>
+                        <div className="flex items-center gap-1 dark:text-gray-300">
+                            <div className="hidden sm:block"> Welcome back,</div><strong className="text-gray-900 dark:text-white font-semibold">{user?.name}</strong>
                             <img
                                 src="https://placehold.co/300x300/indigo/white?text=User"
                                 alt="profile"
