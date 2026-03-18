@@ -5,6 +5,7 @@ export interface user {
     birthday: Date;
     weightInKg: number;
     heightInCm: number;
+    preferredCalories: number;
     role: string;
     token:string;
 }
@@ -24,6 +25,7 @@ export interface updateUser {
     birthday: Date;
     weightInKg: number;
     heightInCm: number;
+    preferredCalories: number | null;
     role: string;
     token:string;
 }
