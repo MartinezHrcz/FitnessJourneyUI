@@ -9,6 +9,7 @@ import {SearchModal} from "./components/SearchModal.tsx";
 import {CreateFoodModal} from "./components/CreateFoodModal.tsx";
 import {Link} from "react-router-dom";
 import {DailyCalorieSummary} from "./components/DailyCaloriesSummary.tsx";
+import { getCalorieGoal } from "../../utils/calorieCalculator.ts";
 
 const CaloriesMainPage = () => {
     const [user, setUser] = useState<user | null>(null);
@@ -83,7 +84,7 @@ const CaloriesMainPage = () => {
         fetchDailyLog(today);
     };
 
-    const calorieGoal = 2500;
+    const calorieGoal = getCalorieGoal(user);
     return (
         <MainDashboardLayout user={user} activePath="/calories" title="Fuel your journey">
 
