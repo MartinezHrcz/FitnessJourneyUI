@@ -7,4 +7,9 @@ export interface authRequest{
 export interface authResponse{
     user: user;
     token: string;
+    refreshToken: string;
+}
+
+export interface refreshTokenRequest {
+    refreshToken: string;
 }

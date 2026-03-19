@@ -32,6 +32,7 @@ const LoginPage:React.FC = () => {
                 onSuccess:(response) => {
                     const data = response.data;
                     localStorage.setItem("token", data.token);
+                    localStorage.setItem("refreshToken", data.refreshToken);
                     console.log(response.data);
                     localStorage.setItem("user", JSON.stringify(data.user));
                     navigate('/dashboard');
