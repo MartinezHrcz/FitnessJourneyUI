@@ -4,6 +4,8 @@ import type {PostDto, PostCreateDto, PostUpdateDto} from "../../types/social/Pos
 export const postApi = {
     getAll: () => axiosClient.get<PostDto[]>("/post"),
 
+    getFriendsPosts: () => axiosClient.get<PostDto[]>("/post/friends"),
+
     getByUserId: (userId: string) =>
         axiosClient.get<PostDto[]>(`/post/user/${userId}`),
 
