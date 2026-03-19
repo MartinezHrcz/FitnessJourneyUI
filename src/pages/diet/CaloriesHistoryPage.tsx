@@ -7,11 +7,12 @@ import type { CalorieLogDTO } from "../../types/diet/Diet.ts";
 import { CalorieHistoryChart } from "./components/CaloriesHistoryChart.tsx";
 import { HistoryDayCard } from "./components/HistoryCard.tsx";
 import {Link} from "react-router-dom";
+import { getCalorieGoal } from "../../utils/calorieCalculator.ts";
 
 const CaloriesHistoryPage = () => {
     const [user, setUser] = useState<user | null>(null);
     const [history, setHistory] = useState<CalorieLogDTO[]>([]);
-    const calorieGoal = 2500;
+    const calorieGoal = getCalorieGoal(user);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
