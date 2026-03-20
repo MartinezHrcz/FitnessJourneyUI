@@ -4,7 +4,7 @@ export interface CommentDTO
     postId: string;
     userId: string;
     userName: string;
-    userProfilePicture: string;
+    userProfilePicture: string | null;
     content: string;
     sentTime: Date;
 }

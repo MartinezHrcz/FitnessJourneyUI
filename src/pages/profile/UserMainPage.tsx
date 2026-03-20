@@ -114,6 +114,7 @@ const UserMainPage:React.FC = () =>{
 
                 <PostComposer
                     userName={user?.name}
+                    userProfilePicture={user?.profilePictureUrl}
                     newPostContent={newPostContent}
                     previewUrl={previewUrl}
                     onContentChange={setNewPostContent}

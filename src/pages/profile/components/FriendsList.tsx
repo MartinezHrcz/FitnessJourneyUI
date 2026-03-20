@@ -1,5 +1,6 @@
 import { UserPlus } from "lucide-react";
 import type { FriendDTO } from "../../../types/social/Friend.ts";
+import UserAvatar from "../../../components/UserAvatar.tsx";
 
 interface FriendsListProps {
     friends: FriendDTO[];
@@ -32,8 +33,13 @@ const FriendsList = ({ friends }: FriendsListProps) => {
 
 const FriendCard = ({ friend }: { friend: FriendDTO }) => (
     <div className="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center gap-4 hover:border-blue-200 dark:hover:border-blue-900/50 transition-colors group">
-        <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center font-bold text-blue-600 group-hover:scale-110 transition-transform">
-            {friend.friendName.charAt(0)}
+        <div className="group-hover:scale-110 transition-transform">
+            <UserAvatar
+                name={friend.friendName}
+                imageFilename={friend.friendProfilePicture}
+                className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20"
+                textClassName="text-sm"
+            />
         </div>
         <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-slate-800 dark:text-white truncate">

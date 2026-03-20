@@ -4,6 +4,7 @@ export interface PostDto {
     content: string;
     userId: string;
     userName: string;
+    userProfilePicture?: string | null;
     imageUrl: string | null;
     sentTime: string;
     likeCount: number;

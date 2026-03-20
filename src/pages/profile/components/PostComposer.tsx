@@ -1,7 +1,9 @@
 import {Image as ImageIcon, Send, X} from "lucide-react";
+import UserAvatar from "../../../components/UserAvatar.tsx";
 
 interface PostComposerProps {
     userName?: string;
+    userProfilePicture?: string | null;
     newPostContent: string;
     previewUrl: string | null;
     onContentChange: (value: string) => void;
@@ -12,6 +14,7 @@ interface PostComposerProps {
 
 const PostComposer = ({
     userName,
+    userProfilePicture,
     newPostContent,
     previewUrl,
     onContentChange,
@@ -22,8 +25,13 @@ const PostComposer = ({
     return (
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-md border border-slate-100 dark:border-slate-800 mb-8 transition-colors">
             <div className="flex gap-4">
-                <div className="w-12 h-12 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">
-                    {userName?.charAt(0).toUpperCase() || "U"}
+                <div className="shrink-0">
+                    <UserAvatar
+                        name={userName}
+                        imageFilename={userProfilePicture}
+                        className="w-12 h-12"
+                        textClassName="text-lg"
+                    />
                 </div>
 
                 <textarea

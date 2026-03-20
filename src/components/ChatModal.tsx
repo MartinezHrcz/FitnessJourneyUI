@@ -3,6 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import {messageApi} from "../api/messages/messageApi.ts";
 import type {FriendDTO} from "../types/social/Friend.ts";
 import { Client } from '@stomp/stompjs';
+import UserAvatar from "./UserAvatar.tsx";
 
 const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClose: () => void}) => {
     const [messages, setMessages] = useState<any[]>([]);
@@ -94,9 +95,12 @@ const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClos
 
                 <div className="bg-blue-600 dark:bg-blue-700 p-4 text-white flex justify-between items-center shadow-md z-10">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white/20 dark:bg-black/20 rounded-full flex items-center justify-center font-black border border-white/10">
-                            {friend.friendName.charAt(0)}
-                        </div>
+                        <UserAvatar
+                            name={friend.friendName}
+                            imageFilename={friend.friendProfilePicture}
+                            className="w-10 h-10 bg-white/20 dark:bg-black/20 border border-white/10"
+                            textClassName="text-sm text-white"
+                        />
                         <div>
                             <p className="font-bold tracking-tight">{friend.friendName}</p>
                             <div className="flex items-center gap-1.5">

@@ -6,6 +6,7 @@ import {friendApi} from "../../api/friends/friendApi.ts";
 import type {FriendDTO} from "../../types/social/Friend.ts";
 import {userApi} from "../../api/users/userApi.ts";
 import ChatModal from "../../components/ChatModal.tsx";
+import UserAvatar from "../../components/UserAvatar.tsx";
 
 const SocialHubPage = () => {
     const [activeTab, setActiveTab] = useState<'mine' | 'search' | 'requests'>('mine');
@@ -72,6 +73,7 @@ const SocialHubPage = () => {
                     type="search"
                     name={u.name}
                     info={u.email}
+                    imageFilename={u.profilePictureUrl}
                     onAction={() => handleAddFriend(u.id)}
                 />
             ));
@@ -90,6 +92,7 @@ const SocialHubPage = () => {
                     type={activeTab}
                     name={f.friendName}
                     info={f.friendEmail}
+                    imageFilename={f.friendProfilePicture}
                     onAction={() => handleAcceptFriend(f.id)}
                     onDelete={() => handleDeleteFriend(f.id)}
                 />
@@ -102,6 +105,7 @@ const SocialHubPage = () => {
                 type={activeTab}
                 name={f.friendName}
                 info={f.friendEmail}
+                imageFilename={f.friendProfilePicture}
                 onAction={() => setActiveChatFriend(f)}
                 onDelete={() => handleDeleteFriend(f.id)}
             />
@@ -203,12 +207,15 @@ const TabButton = ({active, onClick, icon, label, badge}: any) => (
     </button>
 )
 
-const SocialCard = ({type, name, info, onAction, onDelete}: any) => (
+const SocialCard = ({type, name, info, imageFilename, onAction, onDelete}: any) => (
     <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between hover:shadow-md transition-all">
         <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center font-black text-slate-400 dark:text-slate-500 transition-colors">
-                {name.charAt(0)}
-            </div>
+            <UserAvatar
+                name={name}
+                imageFilename={imageFilename}
+                className="w-12 h-12"
+                textClassName="text-lg"
+            />
 
             <div>
                 <p className="font-bold text-slate-800 dark:text-white transition-colors">{name}</p>

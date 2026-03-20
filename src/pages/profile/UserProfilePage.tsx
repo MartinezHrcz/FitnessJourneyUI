@@ -1,7 +1,7 @@
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import type {user} from "../../types/User.ts";
-import {User, Mail, Calendar, Ruler, Scale, ShieldCheck, Settings, Users2} from "lucide-react";
-import {useEffect, useState} from "react";
+import {User, Mail, Calendar, Ruler, Scale, ShieldCheck, Settings, Users2, Camera} from "lucide-react";
+import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useTheme} from "../../hooks/useTheme.ts";
 import {friendApi} from "../../api/friends/friendApi.ts";
@@ -9,14 +9,20 @@ import type {FriendDTO} from "../../types/social/Friend.ts";
 import SettingsTab from "./components/UserSettings.tsx";
 import TabButton from "./components/TabButton.tsx";
 import FriendsList from "./components/FriendsList.tsx";
+import {userApi} from "../../api/users/userApi.ts";
+import UserAvatar from "../../components/UserAvatar.tsx";
 
 
 const UserProfilePage = () => {
     const [user, setUser] = useState<user | null>(null);
     const [activeTab, setActiveTab] = useState<"profile" | "friends" | "settings">("profile");
     const [friends, setFriends] = useState<FriendDTO[]>([]);
+    const [isUploadingPicture, setIsUploadingPicture] = useState(false);
+    const [pictureError, setPictureError] = useState<string | null>(null);
+    const profilePictureInputRef = useRef<HTMLInputElement | null>(null);
     const { isDark, toggleTheme } = useTheme();
     const navigate = useNavigate();
+    const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024;
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -32,6 +38,41 @@ const UserProfilePage = () => {
     const bmi = (user.weightInKg / Math.pow(user.heightInCm / 100, 2)).toFixed(1);
     const age = new Date().getFullYear() - new Date(user.birthday).getFullYear();
 
+    const handleProfilePictureClick = () => {
+        if (isUploadingPicture) return;
+        profilePictureInputRef.current?.click();
+    };
+
+    const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            setPictureError("Please choose a valid image file.");
+            return;
+        }
+
+        if (file.size > MAX_PROFILE_IMAGE_SIZE) {
+            setPictureError("Profile picture must be 5MB or smaller.");
+            return;
+        }
+
+        try {
+            setIsUploadingPicture(true);
+            const res = await userApi.updateProfilePicture(file);
+            setUser(res.data);
+            localStorage.setItem("user", JSON.stringify(res.data));
+            setPictureError(null);
+        } catch (error) {
+            console.error("Failed to upload profile picture", error);
+            setPictureError("Failed to update profile picture. Please try again.");
+        } finally {
+            setIsUploadingPicture(false);
+        }
+    };
+
     return (
         <MainDashboardLayout user={user} title="My Profile" activePath="/profile">
             <div className="max-w-2xl mx-auto space-y-6 pb-20">
@@ -43,7 +84,16 @@ const UserProfilePage = () => {
 
                 <div className="min-h-[400px]">
                     {activeTab === "profile" && (
-                        <ProfileTab user={user} bmi={bmi} age={age} />
+                        <ProfileTab
+                            user={user}
+                            bmi={bmi}
+                            age={age}
+                            onProfilePictureClick={handleProfilePictureClick}
+                            onProfilePictureChange={handleProfilePictureChange}
+                            profilePictureInputRef={profilePictureInputRef}
+                            isUploadingPicture={isUploadingPicture}
+                            pictureError={pictureError}
+                        />
                     )}
 
                     {activeTab === "friends" && (
@@ -86,16 +136,50 @@ const InfoRow = ({ icon, label, value }: any) => (
     </div>
 );
 
-const ProfileTab = ({ user, bmi, age }: any) => (
+const ProfileTab = ({
+    user,
+    bmi,
+    age,
+    onProfilePictureClick,
+    onProfilePictureChange,
+    profilePictureInputRef,
+    isUploadingPicture,
+    pictureError
+}: any) => (
     <div className="space-y-6 animate-in fade-in duration-300">
         <section className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-800 text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-500 to-blue-700" />
             <div className="relative pt-8">
-                <div className="w-28 h-28 bg-white dark:bg-slate-800 rounded-full mx-auto p-1 shadow-xl">
-                    <div className="w-full h-full bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-blue-600 text-4xl font-black">
-                        {user.name.charAt(0)}
-                    </div>
-                </div>
+                <button
+                    type="button"
+                    onClick={onProfilePictureClick}
+                    className="relative w-28 h-28 bg-white dark:bg-slate-800 rounded-full mx-auto p-1 shadow-xl"
+                    title="Update profile picture"
+                >
+                    <UserAvatar
+                        name={user.name}
+                        imageFilename={user.profilePictureUrl}
+                        className="w-full h-full"
+                        textClassName="text-4xl"
+                        alt={`${user.name} profile picture`}
+                    />
+                    <span className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full shadow-md">
+                        <Camera size={14} />
+                    </span>
+                </button>
+                <input
+                    ref={profilePictureInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={onProfilePictureChange}
+                />
+                {isUploadingPicture && (
+                    <p className="mt-3 text-xs font-semibold text-blue-600 dark:text-blue-400">Uploading picture...</p>
+                )}
+                {pictureError && (
+                    <p className="mt-3 text-xs font-semibold text-red-500">{pictureError}</p>
+                )}
                 <h1 className="mt-4 text-2xl font-black text-slate-800 dark:text-white">{user.name}</h1>
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full text-[10px] font-bold uppercase tracking-widest mt-2">
                     <ShieldCheck size={12} /> {user.role}
