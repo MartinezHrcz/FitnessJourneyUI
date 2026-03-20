@@ -6,6 +6,7 @@ export interface user {
     weightInKg: number;
     heightInCm: number;
     preferredCalories: number;
+    profilePictureUrl: string | null;
     role: string;
     token:string;
 }
@@ -26,6 +27,7 @@ export interface updateUser {
     weightInKg: number;
     heightInCm: number;
     preferredCalories: number | null;
+    profilePictureUrl: string | null;
     role: string;
     token:string;
 }

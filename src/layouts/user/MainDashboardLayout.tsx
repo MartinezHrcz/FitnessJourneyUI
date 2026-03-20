@@ -9,6 +9,7 @@ import {
     CircleUser,
     type LucideIcon
 } from "lucide-react";
+import UserAvatar from "../../components/UserAvatar.tsx";
 
 import type {user} from "../../types/User.ts";
 
@@ -67,11 +68,15 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                     <a href="/profile">
                         <div className="flex items-center gap-1 dark:text-gray-300">
                             <div className="hidden sm:block"> Welcome back,</div><strong className="text-gray-900 dark:text-white font-semibold">{user?.name}</strong>
-                            <img
-                                src="https://placehold.co/300x300/indigo/white?text=User"
-                                alt="profile"
-                                className="w-10 h-10 rounded-full object-cover border-2 border-indigo-400 cursor-pointer transition-transform duration-200 hover:scale-105"
-                            />
+                            <div className="border-2 border-indigo-400 rounded-full cursor-pointer transition-transform duration-200 hover:scale-105">
+                                <UserAvatar
+                                    name={user?.name}
+                                    imageFilename={user?.profilePictureUrl}
+                                    className="w-10 h-10"
+                                    textClassName="text-sm"
+                                    alt="Profile picture"
+                                />
+                            </div>
                         </div>
                     </a>
                 </header>

@@ -5,6 +5,7 @@ import type {CommentDTO} from "../types/social/Comment.ts";
 import {commentApi} from "../api/comments/commentApi.ts";
 import {postApi} from "../api/posts/postApi.ts";
 import {fileShareApi} from "../api/file/fileShareApi.ts";
+import UserAvatar from "./UserAvatar.tsx";
 
 interface PostCardProps {
     post: PostDto;
@@ -98,9 +99,12 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 mb-6 transition-all duration-300">
             <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-600 dark:bg-blue-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg shadow-blue-100 dark:shadow-none">
-                        {post.userName.charAt(0).toUpperCase() || "U"}
-                    </div>
+                    <UserAvatar
+                        name={post.userName}
+                        imageFilename={post.userProfilePicture}
+                        className="w-10 h-10 shadow-lg shadow-blue-100 dark:shadow-none"
+                        textClassName="text-sm"
+                    />
                     <div>
                         <p className="font-bold text-slate-800 dark:text-slate-100">{post.userName || "User"}</p>
                         <div className="flex items-center gap-1 text-slate-400 dark:text-slate-500 text-xs font-medium">
@@ -150,9 +154,12 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
                     <div className="space-y-3">
                         {comments.map((comment) => (
                             <div key={comment.id} className="flex gap-3 items-start group">
-                                <div className="w-8 h-8 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 text-xs font-black">
-                                    {comment.userName.charAt(0).toUpperCase()}
-                                </div>
+                                <UserAvatar
+                                    name={comment.userName}
+                                    imageFilename={comment.userProfilePicture}
+                                    className="w-8 h-8"
+                                    textClassName="text-xs"
+                                />
                                 <div className="flex-1 bg-slate-50 dark:bg-slate-800 rounded-2xl px-4 py-2 relative">
                                     <p className="font-bold text-xs text-slate-800 dark:text-slate-200">{comment.userName}</p>
                                     <p className="text-sm text-slate-600 dark:text-slate-400">{comment.content}</p>
