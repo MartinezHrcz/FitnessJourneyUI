@@ -1,6 +1,6 @@
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
-import type {user} from "../../types/User.ts";
-import {User, Mail, Calendar, Ruler, Scale, ShieldCheck, Settings, Users2, Camera} from "lucide-react";
+import type {user, updateUser} from "../../types/User.ts";
+import {User, Mail, Calendar, Ruler, Scale, ShieldCheck, Settings, Users2, Camera, Edit2, Save, X} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useTheme} from "../../hooks/useTheme.ts";
@@ -9,8 +9,8 @@ import type {FriendDTO} from "../../types/social/Friend.ts";
 import SettingsTab from "./components/UserSettings.tsx";
 import TabButton from "./components/TabButton.tsx";
 import FriendsList from "./components/FriendsList.tsx";
+import ProfileTab from "./components/ProfileTab.tsx";
 import {userApi} from "../../api/users/userApi.ts";
-import UserAvatar from "../../components/UserAvatar.tsx";
 
 
 const UserProfilePage = () => {
@@ -19,6 +19,10 @@ const UserProfilePage = () => {
     const [friends, setFriends] = useState<FriendDTO[]>([]);
     const [isUploadingPicture, setIsUploadingPicture] = useState(false);
     const [pictureError, setPictureError] = useState<string | null>(null);
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [editFormData, setEditFormData] = useState<Partial<user> | null>(null);
+    const [isSavingProfile, setIsSavingProfile] = useState(false);
+    const [profileError, setProfileError] = useState<string | null>(null);
     const profilePictureInputRef = useRef<HTMLInputElement | null>(null);
     const { isDark, toggleTheme } = useTheme();
     const navigate = useNavigate();
@@ -29,7 +33,14 @@ const UserProfilePage = () => {
         if (storedUser) {
             const parsed = JSON.parse(storedUser);
             setUser(parsed);
-            friendApi.getFriendsOfUser(parsed.id).then(res => setFriends(res.data.filter(f => f.status === 'ACCEPTED')));
+            friendApi.getFriendsOfUser(parsed.id)
+                .then((res) => {
+                    const friendList = Array.isArray(res.data) ? res.data : [];
+                    setFriends(friendList.filter((friend) => friend.status === "ACCEPTED"));
+                })
+                .catch(() => {
+                    setFriends([]);
+                });
         }
     }, []);
 
@@ -73,6 +84,48 @@ const UserProfilePage = () => {
         }
     };
 
+    const handleEditProfile = () => {
+        if (user) {
+            setEditFormData(user);
+            setIsEditingProfile(true);
+            setProfileError(null);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditingProfile(false);
+        setEditFormData(null);
+        setProfileError(null);
+    };
+
+    const handleSaveProfile = async () => {
+        if (!user || !editFormData) return;
+
+        try {
+            setIsSavingProfile(true);
+            setProfileError(null);
+            const res = await userApi.updateUser(user.id, editFormData as updateUser);
+            setUser(res.data);
+            localStorage.setItem("user", JSON.stringify(res.data));
+            setIsEditingProfile(false);
+            setEditFormData(null);
+        } catch (error) {
+            console.error("Failed to update profile", error);
+            setProfileError("Failed to update profile. Please try again.");
+        } finally {
+            setIsSavingProfile(false);
+        }
+    };
+
+    const handleEditFormChange = (field: keyof user, value: any) => {
+        if (editFormData) {
+            setEditFormData({
+                ...editFormData,
+                [field]: value
+            });
+        }
+    };
+
     return (
         <MainDashboardLayout user={user} title="My Profile" activePath="/profile">
             <div className="max-w-2xl mx-auto space-y-6 pb-20">
@@ -93,6 +146,14 @@ const UserProfilePage = () => {
                             profilePictureInputRef={profilePictureInputRef}
                             isUploadingPicture={isUploadingPicture}
                             pictureError={pictureError}
+                            isEditing={isEditingProfile}
+                            editFormData={editFormData}
+                            onEditProfile={handleEditProfile}
+                            onCancelEdit={handleCancelEdit}
+                            onSaveProfile={handleSaveProfile}
+                            onEditFormChange={handleEditFormChange}
+                            isSaving={isSavingProfile}
+                            profileError={profileError}
                         />
                     )}
 
@@ -118,90 +179,4 @@ const UserProfilePage = () => {
     );
 };
 
-const MetricCard = ({ icon, label, value }: any) => (
-    <div className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center transition-colors">
-        <div className="flex justify-center mb-2">{icon}</div>
-        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{label}</p>
-        <p className="text-lg font-black text-slate-800 dark:text-white">{value}</p>
-    </div>
-);
-
-const InfoRow = ({ icon, label, value }: any) => (
-    <div className="flex items-center gap-4 p-4">
-        <div className="p-2 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-xl transition-colors">{icon}</div>
-        <div>
-            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase leading-none mb-1">{label}</p>
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{value}</p>
-        </div>
-    </div>
-);
-
-const ProfileTab = ({
-    user,
-    bmi,
-    age,
-    onProfilePictureClick,
-    onProfilePictureChange,
-    profilePictureInputRef,
-    isUploadingPicture,
-    pictureError
-}: any) => (
-    <div className="space-y-6 animate-in fade-in duration-300">
-        <section className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-800 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-500 to-blue-700" />
-            <div className="relative pt-8">
-                <button
-                    type="button"
-                    onClick={onProfilePictureClick}
-                    className="relative w-28 h-28 bg-white dark:bg-slate-800 rounded-full mx-auto p-1 shadow-xl"
-                    title="Update profile picture"
-                >
-                    <UserAvatar
-                        name={user.name}
-                        imageFilename={user.profilePictureUrl}
-                        className="w-full h-full"
-                        textClassName="text-4xl"
-                        alt={`${user.name} profile picture`}
-                    />
-                    <span className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full shadow-md">
-                        <Camera size={14} />
-                    </span>
-                </button>
-                <input
-                    ref={profilePictureInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={onProfilePictureChange}
-                />
-                {isUploadingPicture && (
-                    <p className="mt-3 text-xs font-semibold text-blue-600 dark:text-blue-400">Uploading picture...</p>
-                )}
-                {pictureError && (
-                    <p className="mt-3 text-xs font-semibold text-red-500">{pictureError}</p>
-                )}
-                <h1 className="mt-4 text-2xl font-black text-slate-800 dark:text-white">{user.name}</h1>
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full text-[10px] font-bold uppercase tracking-widest mt-2">
-                    <ShieldCheck size={12} /> {user.role}
-                </span>
-            </div>
-        </section>
-
-        <div className="grid grid-cols-3 gap-4">
-            <MetricCard icon={<Scale size={18} className="text-orange-500"/>} label="Weight" value={`${user.weightInKg}kg`} />
-            <MetricCard icon={<Ruler size={18} className="text-blue-500"/>} label="Height" value={`${user.heightInCm}cm`} />
-            <MetricCard icon={<User size={18} className="text-green-500"/>} label="BMI" value={bmi} />
-        </div>
-
-        <section className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-            <div className="p-6 border-b border-slate-50 dark:border-slate-800">
-                <h2 className="font-bold text-slate-800 dark:text-white">Personal Information</h2>
-            </div>
-            <div className="divide-y divide-slate-50 dark:divide-slate-800">
-                <InfoRow icon={<Mail size={18}/>} label="Email Address" value={user.email} />
-                <InfoRow icon={<Calendar size={18}/>} label="Birthday" value={`${new Date(user.birthday).toLocaleDateString()} (${age} years)`} />
-            </div>
-        </section>
-    </div>
-);
 export default UserProfilePage;

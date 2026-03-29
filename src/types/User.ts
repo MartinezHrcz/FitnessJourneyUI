@@ -7,7 +7,6 @@ export interface user {
     heightInCm: number;
     preferredCalories: number;
     profilePictureUrl: string | null;
-    role: string;
     token:string;
 }
 
@@ -28,7 +27,6 @@ export interface updateUser {
     heightInCm: number;
     preferredCalories: number | null;
     profilePictureUrl: string | null;
-    role: string;
     token:string;
 }
 

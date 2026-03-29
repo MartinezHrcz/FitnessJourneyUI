@@ -4,7 +4,6 @@ import {fileShareApi} from "../api/file/fileShareApi.ts";
 interface UserAvatarProps {
     name?: string;
     imageFilename?: string | null;
-    alt?: string;
     className?: string;
     textClassName?: string;
 }
@@ -12,7 +11,6 @@ interface UserAvatarProps {
 const UserAvatar = ({
     name,
     imageFilename,
-    alt = "User avatar",
     className = "w-10 h-10",
     textClassName = "text-base"
 }: UserAvatarProps) => {
@@ -40,11 +38,19 @@ const UserAvatar = ({
         fileShareApi.getFile(imageFilename)
             .then((response) => {
                 if (!isMounted) return;
-                objectUrl = URL.createObjectURL(response.data);
-                setImgSrc(objectUrl);
+
+                if (typeof response.data === 'string') {
+                    setImgSrc(response.data);
+                } else if (response.data instanceof Blob) {
+                    objectUrl = URL.createObjectURL(response.data);
+                    setImgSrc(objectUrl);
+                } else if (response.data === null) {
+                    setImgSrc(null);
+                }
             })
-            .catch(() => {
+            .catch((error) => {
                 if (isMounted) {
+                    console.warn("Failed to load image:", error);
                     setImgSrc(null);
                 }
             });
@@ -58,11 +64,13 @@ const UserAvatar = ({
     }, [imageFilename]);
 
     return (
-        <div className={`${className} rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 flex items-center justify-center`}>
+        <div className={`${className} rounded-full overflow-hidden bg-gray-100 dark:bg-slate-950 flex items-center justify-center`}>
             {imgSrc ? (
-                <img src={imgSrc} alt={alt} className="w-full h-full object-cover" />
+                <img src={imgSrc} className="w-full h-full object-cover" />
             ) : (
-                <span className={`font-black text-blue-600 dark:text-blue-400 ${textClassName}`}>{fallbackInitial}</span>
+                <div className={`w-full h-full bg-gray-100 dark:bg-slate-950 rounded-full flex items-center justify-center text-black dark:text-white font-normal [text-shadow:0_0_10px_rgba(59,130,246,0.95),0_0_22px_rgba(59,130,246,0.8),0_0_34px_rgba(59,130,246,0.55)] ${textClassName}`}>
+                    {fallbackInitial}
+                </div>
             )}
         </div>
     );

@@ -74,7 +74,6 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                                     imageFilename={user?.profilePictureUrl}
                                     className="w-10 h-10"
                                     textClassName="text-sm"
-                                    alt="Profile picture"
                                 />
                             </div>
                         </div>

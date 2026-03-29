@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Moon, Sun, Target, Save } from "lucide-react";
 import { userApi } from "../../../api/users/userApi.ts";
+import { Alert } from "../../../components/AlertDialog.tsx";
 
 const SettingsTab = ({ user, setUser, isDark, toggleTheme }: any) => {
     const [calories, setCalories] = useState(user.preferredCalories || "");
     const [loading, setLoading] = useState(false);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const [alertType, setAlertType] = useState<"error" | "warning" | "success">("success");
 
     const handleUpdateCalories = async () => {
         setLoading(true);
@@ -13,9 +16,12 @@ const SettingsTab = ({ user, setUser, isDark, toggleTheme }: any) => {
             const res = await userApi.updateUser(user.id, updateData);
             setUser(res.data);
             localStorage.setItem("user", JSON.stringify(res.data));
-            alert("Settings updated!");
+            setAlertType("success");
+            setAlertMessage("Settings updated!");
         } catch (error) {
             console.error(error);
+            setAlertType("error");
+            setAlertMessage("Failed to update settings.");
         } finally {
             setLoading(false);
         }
@@ -23,6 +29,7 @@ const SettingsTab = ({ user, setUser, isDark, toggleTheme }: any) => {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
+            <Alert message={alertMessage ?? undefined} type={alertType} onClose={() => setAlertMessage(null)} />
             <section className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
                 <h2 className="font-bold text-slate-800 dark:text-white mb-4">Appearance</h2>
                 <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
