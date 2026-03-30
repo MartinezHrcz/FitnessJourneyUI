@@ -1,4 +1,5 @@
 import {XIcon} from "lucide-react";
+import {useNavigate} from "react-router-dom";
 
 interface AuthLayoutProps{
     title: string,
@@ -8,10 +9,15 @@ interface AuthLayoutProps{
 }
 
 export default function AuthLayout({title,subTitle,icon,children}: AuthLayoutProps) {
+    const navigate = useNavigate();
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-950 transition-colors duration-300 p-4">
             <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl w-full max-w-md border border-transparent dark:border-slate-800 transition-colors">
-                <div className="float-end cursor-pointer text-gray-400 hover:text-red-600 transition duration-300 ease-in-out hover:scale-110">
+                <div
+                    onClick={() => navigate("/")}
+                    className="float-end cursor-pointer text-gray-400 hover:text-red-600 transition duration-300 ease-in-out hover:scale-110"
+                >
                     <XIcon size={24} />
                 </div>
 
