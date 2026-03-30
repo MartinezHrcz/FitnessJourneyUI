@@ -6,9 +6,11 @@ interface PostComposerProps {
     userProfilePicture?: string | null;
     newPostContent: string;
     previewUrl: string | null;
+    isFriendsOnly: boolean;
     onContentChange: (value: string) => void;
     onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onClearImage: () => void;
+    onVisibilityChange: (value: boolean) => void;
     onCreatePost: () => void;
 }
 
@@ -17,9 +19,11 @@ const PostComposer = ({
     userProfilePicture,
     newPostContent,
     previewUrl,
+    isFriendsOnly,
     onContentChange,
     onImageChange,
     onClearImage,
+    onVisibilityChange,
     onCreatePost
 }: PostComposerProps) => {
     return (
@@ -55,11 +59,23 @@ const PostComposer = ({
             )}
 
             <div className="flex justify-between items-center mt-3">
-                <label className="cursor-pointer text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 px-2 py-1 rounded-lg transition-colors">
-                    <ImageIcon size={20} />
-                    <span className="text-sm font-medium">Add Photo</span>
-                    <input type="file" className="hidden" accept="image/*" onChange={onImageChange} />
-                </label>
+                <div className="flex items-center gap-4">
+                    <label className="cursor-pointer text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 px-2 py-1 rounded-lg transition-colors">
+                        <ImageIcon size={20} />
+                        <span className="text-sm font-medium">Add Photo</span>
+                        <input type="file" className="hidden" accept="image/*" onChange={onImageChange} />
+                    </label>
+
+                    <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 font-medium">
+                        <input
+                            type="checkbox"
+                            checked={isFriendsOnly}
+                            onChange={(e) => onVisibilityChange(e.target.checked)}
+                            className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        Only friends
+                    </label>
+                </div>
 
                 <button
                     onClick={onCreatePost}

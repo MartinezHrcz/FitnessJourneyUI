@@ -17,6 +17,8 @@ const UserMainPage:React.FC = () =>{
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [isFriendsOnly, setIsFriendsOnly] = useState(false);
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -55,7 +57,7 @@ const UserMainPage:React.FC = () =>{
         try {
             const res = feed === "friends"
                 ? await postApi.getFriendsPosts()
-                : await postApi.getAll();
+                : await postApi.getFeed();
             setPosts(res.data);
         } catch (err) {
             console.error("Failed to fetch posts", err);
@@ -71,14 +73,16 @@ const UserMainPage:React.FC = () =>{
                 const postData = JSON.stringify({
                     title: "New Post",
                     content: newPostContent,
-                    userId: user.id
+                    userId: user.id,
+                    visibility: isFriendsOnly ? "FRIENDS_ONLY" : "GLOBAL"
                 });
                 res = await postApi.createWithImage(postData, selectedImage);
             } else {
                 res = await postApi.create({
                     userId: user.id,
                     title: "New Post",
-                    content: newPostContent
+                    content: newPostContent,
+                    visibility: isFriendsOnly ? "FRIENDS_ONLY" : "GLOBAL"
                 });
             }
 
@@ -86,8 +90,11 @@ const UserMainPage:React.FC = () =>{
             setNewPostContent("");
             setSelectedImage(null);
             setPreviewUrl(null);
+            setIsFriendsOnly(false);
+            setSuccessMessage("Post created successfully.");
         } catch (err) {
             console.error("Error creating post", err);
+            setError("Failed to create post.");
         }
     };
 
@@ -95,8 +102,10 @@ const UserMainPage:React.FC = () =>{
         try {
             await postApi.delete(id);
             setPosts(posts.filter(p => p.id !== id));
+            setSuccessMessage("Post deleted successfully.");
         } catch (err) {
             console.error("Error deleting post", err);
+            setError("Failed to delete post.");
         }
     };
 
@@ -111,18 +120,27 @@ const UserMainPage:React.FC = () =>{
                         onClose={() => setError(null)}
                     />
                 )}
+                {successMessage && (
+                    <Alert
+                        message={successMessage}
+                        type="success"
+                        onClose={() => setSuccessMessage(null)}
+                    />
+                )}
 
                 <PostComposer
                     userName={user?.name}
                     userProfilePicture={user?.profilePictureUrl}
                     newPostContent={newPostContent}
                     previewUrl={previewUrl}
+                    isFriendsOnly={isFriendsOnly}
                     onContentChange={setNewPostContent}
                     onImageChange={handleImageChange}
                     onClearImage={() => {
                         setSelectedImage(null);
                         setPreviewUrl(null);
                     }}
+                    onVisibilityChange={setIsFriendsOnly}
                     onCreatePost={handleCreatePost}
                 />
 

@@ -1,21 +1,21 @@
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import type {user, updateUser} from "../../types/User.ts";
-import {User, Mail, Calendar, Ruler, Scale, ShieldCheck, Settings, Users2, Camera, Edit2, Save, X} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useTheme} from "../../hooks/useTheme.ts";
 import {friendApi} from "../../api/friends/friendApi.ts";
 import type {FriendDTO} from "../../types/social/Friend.ts";
 import SettingsTab from "./components/UserSettings.tsx";
-import TabButton from "./components/TabButton.tsx";
 import FriendsList from "./components/FriendsList.tsx";
 import ProfileTab from "./components/ProfileTab.tsx";
 import {userApi} from "../../api/users/userApi.ts";
+import ProfileTabsNav, {type ProfilePageTab} from "./components/ProfileTabsNav.tsx";
+import ProfilePostsTab from "./components/ProfilePostsTab.tsx";
 
 
 const UserProfilePage = () => {
     const [user, setUser] = useState<user | null>(null);
-    const [activeTab, setActiveTab] = useState<"profile" | "friends" | "settings">("profile");
+    const [activeTab, setActiveTab] = useState<ProfilePageTab>("profile");
     const [friends, setFriends] = useState<FriendDTO[]>([]);
     const [isUploadingPicture, setIsUploadingPicture] = useState(false);
     const [pictureError, setPictureError] = useState<string | null>(null);
@@ -129,11 +129,7 @@ const UserProfilePage = () => {
     return (
         <MainDashboardLayout user={user} title="My Profile" activePath="/profile">
             <div className="max-w-2xl mx-auto space-y-6 pb-20">
-                <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
-                    <TabButton active={activeTab === "profile"} onClick={() => setActiveTab("profile")} label="Profile" icon={<User size={18}/>} />
-                    <TabButton active={activeTab === "friends"} onClick={() => setActiveTab("friends")} label="Friends" icon={<Users2 size={18}/>} />
-                    <TabButton active={activeTab === "settings"} onClick={() => setActiveTab("settings")} label="Settings" icon={<Settings size={18}/>} />
-                </div>
+                <ProfileTabsNav activeTab={activeTab} onTabChange={setActiveTab} />
 
                 <div className="min-h-[400px]">
                     {activeTab === "profile" && (
@@ -159,6 +155,14 @@ const UserProfilePage = () => {
 
                     {activeTab === "friends" && (
                         <FriendsList friends={friends} />
+                    )}
+
+                    {activeTab === "posts" && (
+                        <ProfilePostsTab
+                            userName={user.name}
+                            userId={user.id}
+                            userProfilePicture={user.profilePictureUrl}
+                        />
                     )}
 
                     {activeTab === "settings" && (

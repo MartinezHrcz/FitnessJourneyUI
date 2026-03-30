@@ -7,9 +7,10 @@ interface PostFeedListProps {
     currentUserId: string;
     activeFeed: PostFeedType;
     onDeletePost: (id: string) => void;
+    onEditPost?: (post: PostDto) => void;
 }
 
-const PostFeedList = ({posts, currentUserId, activeFeed, onDeletePost}: PostFeedListProps) => {
+const PostFeedList = ({posts, currentUserId, activeFeed, onDeletePost, onEditPost}: PostFeedListProps) => {
     if (posts.length === 0) {
         return (
             <div className="text-center py-16 text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-900/20 rounded-3xl border-2 border-dashed border-slate-100 dark:border-slate-800">
@@ -28,6 +29,7 @@ const PostFeedList = ({posts, currentUserId, activeFeed, onDeletePost}: PostFeed
                     post={post}
                     currentUserId={currentUserId}
                     onDelete={onDeletePost}
+                    onEdit={onEditPost}
                 />
             ))}
         </>

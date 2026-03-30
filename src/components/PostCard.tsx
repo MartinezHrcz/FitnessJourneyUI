@@ -1,4 +1,4 @@
-import {Heart, MessageSquare, Trash2, Clock, Send} from "lucide-react";
+import {Heart, MessageSquare, Trash2, Clock, Send, Pencil} from "lucide-react";
 import type { PostDto } from "../types/social/Post.ts";
 import {useEffect, useState} from "react";
 import type {CommentDTO} from "../types/social/Comment.ts";
@@ -11,9 +11,10 @@ interface PostCardProps {
     post: PostDto;
     currentUserId: string;
     onDelete: (id: string) => void;
+    onEdit?: (post: PostDto) => void;
 }
 
-export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
+export const PostCard = ({ post, currentUserId, onDelete, onEdit }: PostCardProps) => {
 
     const [showComments, setShowComments] = useState(false);
     const [comments, setComments] = useState<CommentDTO[]>([]);
@@ -110,13 +111,29 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
                         <div className="flex items-center gap-1 text-slate-400 dark:text-slate-500 text-xs font-medium">
                             <Clock size={12} />
                             {new Date(post.sentTime).toLocaleDateString()}
+                            {post.visibility === "FRIENDS_ONLY" && (
+                                <span className="ml-2 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-300">
+                                    Friends only
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
                 {post.userId === currentUserId && (
-                    <button onClick={() => onDelete(post.id)} className="text-slate-300 dark:text-slate-700 hover:text-red-500 transition-colors">
-                        <Trash2 size={18} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {onEdit && (
+                            <button
+                                onClick={() => onEdit(post)}
+                                className="text-slate-300 dark:text-slate-700 hover:text-blue-500 transition-colors"
+                                title="Edit post"
+                            >
+                                <Pencil size={18} />
+                            </button>
+                        )}
+                        <button onClick={() => onDelete(post.id)} className="text-slate-300 dark:text-slate-700 hover:text-red-500 transition-colors" title="Delete post">
+                            <Trash2 size={18} />
+                        </button>
+                    </div>
                 )}
             </div>
 
