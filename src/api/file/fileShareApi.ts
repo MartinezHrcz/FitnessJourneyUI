@@ -1,5 +1,13 @@
 import axiosClient from "../axiosClient.ts";
 
+const toNullableFileResponse = (response: any) => {
+    if (response.status === 204 || !response.data || (response.data instanceof Blob && response.data.size === 0)) {
+        return { data: null } as any;
+    }
+
+    return response;
+};
+
 export const fileShareApi = {
     getFile: (imageReference: string) => {
         const normalized = imageReference.trim();
@@ -8,12 +16,7 @@ export const fileShareApi = {
             return axiosClient.get(normalized.replace(/^\/api/, ""), {
                 responseType: 'blob',
                 validateStatus: (status) => status < 500,
-            }).then((res) => {
-                if (res.status === 204 || !res.data || (res.data instanceof Blob && res.data.size === 0)) {
-                    return { data: null } as any;
-                }
-                return res;
-            });
+            }).then(toNullableFileResponse);
         }
 
         if (normalized.startsWith("http") || normalized.startsWith("data:")) {
@@ -22,8 +25,9 @@ export const fileShareApi = {
 
         if (normalized.startsWith("/api/")) {
             return axiosClient.get(normalized.replace(/^\/api/, ""), {
-                responseType: 'blob'
-            });
+                responseType: 'blob',
+                validateStatus: (status) => status < 500,
+            }).then(toNullableFileResponse);
         }
 
         const withoutLeadingSlash = normalized.replace(/^\/+/, "");
@@ -32,8 +36,9 @@ export const fileShareApi = {
             : withoutLeadingSlash;
 
         return axiosClient.get(`/files/${encodeURIComponent(legacyFileName)}`, {
-            responseType: 'blob'
-        }).catch((error) => {
+            responseType: 'blob',
+            validateStatus: (status) => status < 500,
+        }).then(toNullableFileResponse).catch((error) => {
             console.warn(`File not found: ${legacyFileName}`, error);
             return { data: null } as any;
         });

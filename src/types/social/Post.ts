@@ -6,6 +6,7 @@ export interface PostDto {
     content: string;
     userId: string;
     userName: string;
+    userProfilePictureUrl?: string | null;
     userProfilePicture?: string | null;
     imageUrl: string | null;
     sentTime: string;

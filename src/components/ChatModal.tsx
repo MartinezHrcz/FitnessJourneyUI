@@ -36,7 +36,7 @@ const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClos
         };
 
         client.onStompError = (frame) => {
-            console.error('Broker reported error: ' + frame.headers['message']);
+            console.error('Reported error: ' + frame.headers['message']);
             console.error('Additional details: ' + frame.body);
         };
 

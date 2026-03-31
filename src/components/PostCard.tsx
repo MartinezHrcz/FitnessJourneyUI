@@ -21,6 +21,7 @@ export const PostCard = ({ post, currentUserId, onDelete, onEdit }: PostCardProp
     const [newComment, setNewComment] = useState("");
     const [liked, setLiked] = useState(post.likedByCurrentUser);
     const [likeCount, setLikeCount] = useState(post.likeCount);
+    const postUserProfilePicture = post.userProfilePictureUrl ?? post.userProfilePicture ?? null;
 
     useEffect(() => {
         if (showComments) {
@@ -36,6 +37,11 @@ export const PostCard = ({ post, currentUserId, onDelete, onEdit }: PostCardProp
 
             fileShareApi.getFile(filename)
                 .then((response) => {
+                    if (!(response.data instanceof Blob)) {
+                        setImgSrc("");
+                        return;
+                    }
+
                     const url = URL.createObjectURL(response.data);
                     setImgSrc(url);
                 })
@@ -102,7 +108,7 @@ export const PostCard = ({ post, currentUserId, onDelete, onEdit }: PostCardProp
                 <div className="flex items-center gap-3">
                     <UserAvatar
                         name={post.userName}
-                        imageFilename={post.userProfilePicture}
+                        imageFilename={postUserProfilePicture}
                         className="w-10 h-10 shadow-lg shadow-blue-100 dark:shadow-none"
                         textClassName="text-sm"
                     />
