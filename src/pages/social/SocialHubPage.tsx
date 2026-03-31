@@ -196,18 +196,6 @@ const SocialHubPage = () => {
                         </div>
                     </div>
                 </div>
-
-                <aside className="hidden lg:block w-80 space-y-6">
-                    <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-lg shadow-blue-500/20">
-                        <h3 className="font-bold text-lg mb-2">Community Stats</h3>
-                        <div className="space-y-3 opacity-90">
-                            <div className="flex justify-between text-sm">
-                                <span>Global Rank</span>
-                                <span className="font-bold">#1,240</span>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
             </div>
             {activeChatFriend &&
                 <ChatModal
