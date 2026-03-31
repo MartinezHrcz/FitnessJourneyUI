@@ -13,6 +13,6 @@ export const userApi = {
             headers: { "Content-Type": "multipart/form-data" }
         });
     },
-    updatePassword: (id:string, data: updatePassword) => axiosClient.put<user>(`/pwd/${id}`, data),
+    updatePassword: (id:string, data: updatePassword) => axiosClient.put<user>(`/user/pwd/${id}`, data),
     deleteUser: (id: string) => axiosClient.delete<string>(`/user/${id}`),
 }
