@@ -1,7 +1,17 @@
 import axiosClient from "../axiosClient.ts";
 
 const toNullableFileResponse = (response: any) => {
-    if (response.status === 204 || !response.data || (response.data instanceof Blob && response.data.size === 0)) {
+    const contentType = (response?.headers?.["content-type"] ?? response?.headers?.["Content-Type"] ?? "").toString().toLowerCase();
+    const hasBlobPayload = response.data instanceof Blob;
+    const isImageBlob = hasBlobPayload && (response.data.type?.toLowerCase().startsWith("image/") || contentType.startsWith("image/"));
+
+    if (
+        response.status === 204 ||
+        response.status === 404 ||
+        !response.data ||
+        (hasBlobPayload && response.data.size === 0) ||
+        (hasBlobPayload && !isImageBlob)
+    ) {
         return { data: null } as any;
     }
 
@@ -23,8 +33,9 @@ export const fileShareApi = {
             return Promise.resolve({ data: normalized } as any);
         }
 
-        if (normalized.startsWith("/api/")) {
-            return axiosClient.get(normalized.replace(/^\/api/, ""), {
+        if (normalized.startsWith("/api/") || normalized.startsWith("api/")) {
+            const normalizedApiPath = normalized.startsWith("/") ? normalized : `/${normalized}`;
+            return axiosClient.get(normalizedApiPath.replace(/^\/api/, ""), {
                 responseType: 'blob',
                 validateStatus: (status) => status < 500,
             }).then(toNullableFileResponse);

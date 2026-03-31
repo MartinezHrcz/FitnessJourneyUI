@@ -8,6 +8,15 @@ import {userApi} from "../../api/users/userApi.ts";
 import ChatModal from "../../components/ChatModal.tsx";
 import UserAvatar from "../../components/UserAvatar.tsx";
 
+const getFriendImageFilename = (friend: FriendDTO, currentUserId?: string) => {
+    const directImage = friend.friendProfilePictureUrl ?? friend.friendProfilePicture ?? null;
+    if (directImage) return directImage;
+    if (!currentUserId) return null;
+
+    const counterpartId = currentUserId === friend.friendId ? friend.userId : friend.friendId;
+    return `/api/user/profile-picture/${counterpartId}`;
+};
+
 const SocialHubPage = () => {
     const [activeTab, setActiveTab] = useState<'mine' | 'search' | 'requests'>('mine');
     const [search, setSearch] = useState('');
@@ -92,7 +101,7 @@ const SocialHubPage = () => {
                     type={activeTab}
                     name={f.friendName}
                     info={f.friendEmail}
-                    imageFilename={f.friendProfilePicture}
+                    imageFilename={getFriendImageFilename(f, user?.id)}
                     onAction={() => handleAcceptFriend(f.id)}
                     onDelete={() => handleDeleteFriend(f.id)}
                 />
@@ -105,7 +114,7 @@ const SocialHubPage = () => {
                 type={activeTab}
                 name={f.friendName}
                 info={f.friendEmail}
-                imageFilename={f.friendProfilePicture}
+                imageFilename={getFriendImageFilename(f, user?.id)}
                 onAction={() => setActiveChatFriend(f)}
                 onDelete={() => handleDeleteFriend(f.id)}
             />

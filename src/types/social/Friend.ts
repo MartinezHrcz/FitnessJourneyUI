@@ -6,6 +6,7 @@ export interface FriendDTO {
     friendName: string;
     friendEmail: string;
     friendProfilePicture?: string | null;
+    friendProfilePictureUrl?: string | null;
     isRequester: boolean;
     status: 'ACCEPTED' | 'DECLINED' | 'IN_PROGRESS' | 'BLOCKED' | string ;
     requestedTime: Date;

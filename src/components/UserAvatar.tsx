@@ -66,7 +66,12 @@ const UserAvatar = ({
     return (
         <div className={`${className} rounded-full overflow-hidden bg-gray-100 dark:bg-slate-950 flex items-center justify-center`}>
             {imgSrc ? (
-                <img src={imgSrc} className="w-full h-full object-cover" />
+                <img
+                    src={imgSrc}
+                    className="w-full h-full object-cover"
+                    onError={() => setImgSrc(null)}
+                    alt={name ? `${name} avatar` : "User avatar"}
+                />
             ) : (
                 <div className={`w-full h-full bg-gray-100 dark:bg-slate-950 rounded-full flex items-center justify-center text-black dark:text-white font-normal [text-shadow:0_0_10px_rgba(59,130,246,0.95),0_0_22px_rgba(59,130,246,0.8),0_0_34px_rgba(59,130,246,0.55)] ${textClassName}`}>
                     {fallbackInitial}

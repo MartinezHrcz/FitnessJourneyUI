@@ -5,6 +5,12 @@ import type {FriendDTO} from "../types/social/Friend.ts";
 import { Client } from '@stomp/stompjs';
 import UserAvatar from "./UserAvatar.tsx";
 
+const getFriendImageFilename = (friend: FriendDTO) =>
+    friend.friendProfilePictureUrl ?? friend.friendProfilePicture ?? null;
+
+const getCounterpartId = (friend: FriendDTO, currentUserId: string) =>
+    currentUserId === friend.friendId ? friend.userId : friend.friendId;
+
 const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClose: () => void}) => {
     const [messages, setMessages] = useState<any[]>([]);
     const [newMessage, setNewMessage] = useState("");
@@ -57,13 +63,21 @@ const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClos
     }, []);
 
     useEffect(() => {
+        setLoading(true);
         messageApi.getMessages(friend.userId, friend.friendId)
             .then((res) => {
                 setMessages(res.data);
                 setLoading(false);
             })
-            .catch(err => console.log(err));
-    }, []);
+            .catch(err => {
+                console.log(err);
+                setLoading(false);
+            });
+    }, [friend.userId, friend.friendId]);
+
+    const directFriendImage = getFriendImageFilename(friend);
+    const friendImageFilename = directFriendImage
+        ?? (currentUserId ? `/api/user/profile-picture/${getCounterpartId(friend, currentUserId)}` : null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -97,7 +111,7 @@ const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClos
                     <div className="flex items-center gap-3">
                         <UserAvatar
                             name={friend.friendName}
-                            imageFilename={friend.friendProfilePicture}
+                            imageFilename={friendImageFilename}
                             className="w-10 h-10 bg-white/20 dark:bg-black/20 border border-white/10"
                             textClassName="text-sm text-white"
                         />
