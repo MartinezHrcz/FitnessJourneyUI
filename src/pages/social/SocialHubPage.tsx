@@ -7,6 +7,7 @@ import type {FriendDTO} from "../../types/social/Friend.ts";
 import {userApi} from "../../api/users/userApi.ts";
 import ChatModal from "../../components/ChatModal.tsx";
 import UserAvatar from "../../components/UserAvatar.tsx";
+import {ConfirmDialog} from "../../components/AlertDialog.tsx";
 
 const getFriendImageFilename = (friend: FriendDTO, currentUserId?: string) => {
     const directImage = friend.friendProfilePictureUrl ?? friend.friendProfilePicture ?? null;
@@ -25,6 +26,7 @@ const SocialHubPage = () => {
     const [friendships, setFriendships] = useState<FriendDTO[]>([]);
     const [badge, setBadge] = useState<number>(0);
     const [activeChatFriend, setActiveChatFriend] = useState<FriendDTO | null>(null);
+    const [pendingDeleteFriendshipId, setPendingDeleteFriendshipId] = useState<string | null>(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -57,12 +59,15 @@ const SocialHubPage = () => {
     };
 
     const handleDeleteFriend = (friendshipId: string) => {
-        if (!user) return;
-        if (window.confirm("Are you sure you want to remove this friend?")) {
-            friendApi.delete(friendshipId).then(() => {
-                fetchSocialData(user.id);
-            });
-        }
+        setPendingDeleteFriendshipId(friendshipId);
+    };
+
+    const confirmDeleteFriend = () => {
+        if (!user || !pendingDeleteFriendshipId) return;
+        friendApi.delete(pendingDeleteFriendshipId).then(() => {
+            setPendingDeleteFriendshipId(null);
+            fetchSocialData(user.id);
+        });
     };
 
     const handleAcceptFriend = (friendshipId: string) => {
@@ -138,6 +143,16 @@ const SocialHubPage = () => {
 
     return (
         <MainDashboardLayout user={user} title={'Social hub'} activePath={'/friends'}>
+            <ConfirmDialog
+                isOpen={pendingDeleteFriendshipId !== null}
+                title="Remove Friend"
+                message="Are you sure you want to remove this friend?"
+                confirmLabel="Remove"
+                cancelLabel="Cancel"
+                confirmVariant="danger"
+                onConfirm={confirmDeleteFriend}
+                onCancel={() => setPendingDeleteFriendshipId(null)}
+            />
             <div className="w-full mx-auto flex flex-col lg-flex-row gap-8 p-4">
                 <div className="flex-1 space-y-6">
                     <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl w-fit">

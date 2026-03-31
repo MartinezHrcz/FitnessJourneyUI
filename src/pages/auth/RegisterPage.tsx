@@ -6,6 +6,8 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useAuth} from "../../hooks/useAuth.ts";
 import type {createUser} from "../../types/User.ts";
+import {useState} from "react";
+import {Alert} from "../../components/AlertDialog.tsx";
 
 const registerSchema = z.object({
     username: z.string().min(8, "Username must be at least 8 characters").max(100),
@@ -40,6 +42,7 @@ type RegisterForm = z.infer<typeof registerSchema>;
 const RegisterPage:React.FC = ()=> {
     const {register: registerMutation} = useAuth();
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
     const {register, handleSubmit, formState:{errors, isSubmitting}}= useForm<RegisterForm>({
         resolver: zodResolver(registerSchema),
@@ -62,7 +65,7 @@ const RegisterPage:React.FC = ()=> {
                     navigate('/login');
                 },
                 onError: (error) => {
-                    alert(error.message || "Failed to register");
+                    setErrorMessage(error.message || "Failed to register");
                 }
             }
         )
@@ -75,6 +78,11 @@ const RegisterPage:React.FC = ()=> {
             title={"Register"}
             subTitle={"Your journey starts here!"}
             icon={<UserPlus size={32}/>}>
+            <Alert
+                message={errorMessage}
+                type="error"
+                onClose={() => setErrorMessage(undefined)}
+            />
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
                 <input {...register("username")} placeholder="Name"

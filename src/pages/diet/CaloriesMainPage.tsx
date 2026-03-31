@@ -10,6 +10,7 @@ import {CreateFoodModal} from "./components/CreateFoodModal.tsx";
 import {Link} from "react-router-dom";
 import {DailyCalorieSummary} from "./components/DailyCaloriesSummary.tsx";
 import { getCalorieGoal } from "../../utils/calorieCalculator.ts";
+import {Alert} from "../../components/AlertDialog.tsx";
 
 const CaloriesMainPage = () => {
     const [user, setUser] = useState<user | null>(null);
@@ -17,6 +18,7 @@ const CaloriesMainPage = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<FoodItemDTO[]>([]);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
     const today = new Date().toISOString().split('T')[0];
 
@@ -63,7 +65,7 @@ const CaloriesMainPage = () => {
             setIsCreateModalOpen(false);
             setNewFoodData({ name: "", servingSize: 100, servingUnit: "g", calories: 0, protein: 0, carbs: 0, fats: 0 });
         } catch {
-            alert("Error creating food item. Please check the values.");
+            setErrorMessage("Error creating food item. Please check the values.");
         }
     };
 
@@ -87,6 +89,11 @@ const CaloriesMainPage = () => {
     const calorieGoal = getCalorieGoal(user);
     return (
         <MainDashboardLayout user={user} activePath="/calories" title="Fuel your journey">
+            <Alert
+                message={errorMessage}
+                type="error"
+                onClose={() => setErrorMessage(undefined)}
+            />
 
             <SearchModal
                 isOpen={isSearchOpen}

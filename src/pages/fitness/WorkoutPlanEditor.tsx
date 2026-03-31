@@ -7,6 +7,7 @@ import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
 import type {user} from "../../types/User.ts";
 import type {PlanExerciseDTO} from "../../types/fitness/WorkoutPlan.ts";
 import type {AbstractExerciseDTO} from "../../types/fitness/Exercise.ts";
+import {Alert} from "../../components/AlertDialog.tsx";
 
 const WorkoutPlanEditor = () => {
     const { id } = useParams();
@@ -18,6 +19,7 @@ const WorkoutPlanEditor = () => {
     const [selectedExercises, setSelectedExercises] = useState<PlanExerciseDTO[]>([]);
     const [availableTemplates, setAvailableTemplates] = useState<AbstractExerciseDTO[]>([]);
     const [isSaving, setIsSaving] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -70,7 +72,7 @@ const WorkoutPlanEditor = () => {
             navigate("/workouts/plans");
         } catch (err) {
             console.log(err);
-            alert("Failed to save plan.");
+            setErrorMessage("Failed to save plan.");
         } finally {
             setIsSaving(false);
         }
@@ -78,6 +80,11 @@ const WorkoutPlanEditor = () => {
 
     return (
         <MainDashboardLayout user={user} title={id ? "Edit Plan" : "Create Plan"}>
+            <Alert
+                message={errorMessage}
+                type="error"
+                onClose={() => setErrorMessage(undefined)}
+            />
             <div className="max-w-3xl mx-auto p-4 space-y-6">
                 <div className="flex justify-between items-center">
                     <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-white transition">

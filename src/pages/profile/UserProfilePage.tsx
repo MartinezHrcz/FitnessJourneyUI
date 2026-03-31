@@ -154,7 +154,10 @@ const UserProfilePage = () => {
                     )}
 
                     {activeTab === "friends" && (
-                        <FriendsList friends={friends} />
+                        <FriendsList
+                            friends={friends}
+                            onFindMore={() => navigate("/social")}
+                        />
                     )}
 
                     {activeTab === "posts" && (

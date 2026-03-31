@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { workoutPlanApi } from "../../api/workouts/workoutPlanApi.ts";
 import type { WorkoutPlanDTO } from "../../types/fitness/WorkoutPlan.ts";
 import MainDashboardLayout from "../../layouts/user/MainDashboardLayout.tsx";
-import {Alert} from "../../components/AlertDialog.tsx";
+import {Alert, ConfirmDialog} from "../../components/AlertDialog.tsx";
 
 export const WorkoutPlanManager = () => {
     const navigate = useNavigate();
@@ -12,6 +12,7 @@ export const WorkoutPlanManager = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [user, setUser] = useState<any>(null);
     const [error, setError] = useState<string | undefined>(undefined);
+    const [pendingDeletePlanId, setPendingDeletePlanId] = useState<string | null>(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -24,15 +25,16 @@ export const WorkoutPlanManager = () => {
         workoutPlanApi.getAvailable().then(res => setPlans(res.data));
     };
 
-    const handleDelete = async (id: string) => {
-        if (window.confirm("Are you sure you want to delete this plan?")) {
-            try {
-                await workoutPlanApi.delete(id);
-                setPlans(plans.filter(p => p.id !== id));
-            } catch (err) {
-                console.error(err);
-                setError("Failed to delete plan. You can only delete plans you created.");
-            }
+    const confirmDelete = async () => {
+        if (!pendingDeletePlanId) return;
+        try {
+            await workoutPlanApi.delete(pendingDeletePlanId);
+            setPlans(plans.filter(p => p.id !== pendingDeletePlanId));
+        } catch (err) {
+            console.error(err);
+            setError("Failed to delete plan. You can only delete plans you created.");
+        } finally {
+            setPendingDeletePlanId(null);
         }
     };
 
@@ -45,6 +47,16 @@ export const WorkoutPlanManager = () => {
             <Alert
                 message={error}
                 onClose={() => setError(undefined)} />
+            <ConfirmDialog
+                isOpen={pendingDeletePlanId !== null}
+                title="Delete Plan"
+                message="Are you sure you want to delete this plan?"
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                confirmVariant="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setPendingDeletePlanId(null)}
+            />
             <div className="max-w-4xl mx-auto p-4">
                 <div className="flex items-center gap-4 mb-6">
                     <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
@@ -88,7 +100,7 @@ export const WorkoutPlanManager = () => {
                                 </button>
                                 {plan.creatorId === user?.id && (
                                     <button
-                                        onClick={() => handleDelete(plan.id)}
+                                        onClick={() => setPendingDeletePlanId(plan.id)}
                                         className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                     >
                                         <Trash2 size={18} />

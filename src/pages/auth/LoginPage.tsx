@@ -6,6 +6,8 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import type {authRequest} from "../../types/Auth.ts";
+import {useState} from "react";
+import {Alert} from "../../components/AlertDialog.tsx";
 
 const loginSchema = z.object({
     username: z.string(),
@@ -17,6 +19,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 const LoginPage:React.FC = () => {
     const {login: loginMutation} = useAuth();
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
     const {register, handleSubmit, formState:{isSubmitting}}= useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
@@ -38,7 +41,7 @@ const LoginPage:React.FC = () => {
                     navigate('/dashboard');
                 },
                 onError: (error) => {
-                    alert(error.message || "Failed to login");
+                    setErrorMessage(error.message || "Failed to login");
                 }
             }
         )
@@ -48,6 +51,11 @@ const LoginPage:React.FC = () => {
         <AuthLayout title={"Sign in"}
                     subTitle={"Good to see you back!"}
                     icon={<LogIn size={32} className="text-blue-500 dark:text-blue-400" />}>
+            <Alert
+                message={errorMessage}
+                type="error"
+                onClose={() => setErrorMessage(undefined)}
+            />
             <div>
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
                     <input {...register("username")} placeholder="Your username"

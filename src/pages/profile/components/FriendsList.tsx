@@ -4,16 +4,20 @@ import UserAvatar from "../../../components/UserAvatar.tsx";
 
 interface FriendsListProps {
     friends: FriendDTO[];
+    onFindMore: () => void;
 }
 
-const FriendsList = ({ friends }: FriendsListProps) => {
+const FriendsList = ({ friends, onFindMore }: FriendsListProps) => {
     return (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div className="flex items-center justify-between px-2">
                 <h3 className="font-bold text-slate-800 dark:text-white">
                     Friends ({friends.length})
                 </h3>
-                <button className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider hover:underline flex items-center gap-1">
+                <button
+                    onClick={onFindMore}
+                    className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider hover:underline flex items-center gap-1"
+                >
                     <UserPlus size={12} /> Find More
                 </button>
             </div>
