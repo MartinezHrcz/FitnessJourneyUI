@@ -5,6 +5,8 @@ import type {FriendDTO} from "../types/social/Friend.ts";
 import { Client } from '@stomp/stompjs';
 import UserAvatar from "./UserAvatar.tsx";
 
+const WS_BROKER_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:9090/ws-chat';
+
 const getFriendImageFilename = (friend: FriendDTO) =>
     friend.friendProfilePictureUrl ?? friend.friendProfilePicture ?? null;
 
@@ -23,7 +25,7 @@ const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClos
         if (!currentUserId) return;
 
         const client = new Client({
-            brokerURL: 'ws://localhost:9090/ws-chat',
+            brokerURL: WS_BROKER_URL,
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,

@@ -4,8 +4,10 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean;
 }
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:9090/api').replace(/\/+$/, '');
+
 const axiosClient : AxiosInstance = axios.create({
-    baseURL: 'http://localhost:9090/api',
+    baseURL: API_BASE_URL,
     withCredentials: true
 });
 
@@ -77,7 +79,7 @@ axiosClient.interceptors.response.use(
 
         try {
             const refreshResponse = await axios.post(
-                "http://localhost:9090/api/auth/refresh",
+                `${API_BASE_URL}/auth/refresh`,
                 { refreshToken },
                 { withCredentials: true }
             );

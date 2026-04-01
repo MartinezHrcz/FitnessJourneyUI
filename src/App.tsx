@@ -1,10 +1,10 @@
-import {Route, BrowserRouter, Routes} from "react-router-dom";
+import {Route, HashRouter, Routes} from "react-router-dom";
 import {appRoutes} from "./routes/appRoutes.ts";
 
 function App() {
 
   return (
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
             {appRoutes.map((route) =>
                 (
@@ -12,7 +12,7 @@ function App() {
                 )
             )}
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
   )
 }
 
