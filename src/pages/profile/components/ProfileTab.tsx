@@ -11,7 +11,7 @@ interface ProfileTabProps {
     age: number;
     onProfilePictureClick: () => void;
     onProfilePictureChange: (event: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-    profilePictureInputRef: React.RefObject<HTMLInputElement>;
+    profilePictureInputRef: React.RefObject<HTMLInputElement | null>;
     isUploadingPicture: boolean;
     pictureError: string | null;
     isEditing: boolean;

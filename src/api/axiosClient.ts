@@ -1,4 +1,4 @@
-import axios, {type AxiosError, type AxiosInstance, type InternalAxiosRequestConfig} from "axios";
+import axios, {AxiosHeaders, type AxiosError, type AxiosInstance, type InternalAxiosRequestConfig} from "axios";
 
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean;
@@ -64,7 +64,7 @@ axiosClient.interceptors.response.use(
                 failedQueue.push({
                     resolve: (token: string) => {
                         if (!originalRequest.headers) {
-                            originalRequest.headers = {};
+                            originalRequest.headers = new AxiosHeaders();
                         }
                         originalRequest.headers.Authorization = `Bearer ${token}`;
                         resolve(axiosClient(originalRequest));
@@ -97,7 +97,7 @@ axiosClient.interceptors.response.use(
             }
 
             if (!originalRequest.headers) {
-                originalRequest.headers = {};
+                originalRequest.headers = new AxiosHeaders();
             }
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             processQueue(null, newToken);

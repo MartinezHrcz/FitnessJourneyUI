@@ -13,10 +13,9 @@ const getFriendImageFilename = (friend: FriendDTO) =>
 const getCounterpartId = (friend: FriendDTO, currentUserId: string) =>
     currentUserId === friend.friendId ? friend.userId : friend.friendId;
 
-const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClose: () => void}) => {
+const ChatModal = ({friend, onClose}: {friend: FriendDTO, onClose: () => void}) => {
     const [messages, setMessages] = useState<any[]>([]);
     const [newMessage, setNewMessage] = useState("");
-    const [loading, setLoading] = useState(true);
     const [currentUserId, setCurrentUserId] = useState("");
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const stompClient = useRef<Client | null>(null);
@@ -65,15 +64,12 @@ const ChatModal = ({friend, onClose}: {friend: FriendDTO, userId: string, onClos
     }, []);
 
     useEffect(() => {
-        setLoading(true);
         messageApi.getMessages(friend.userId, friend.friendId)
             .then((res) => {
                 setMessages(res.data);
-                setLoading(false);
             })
             .catch(err => {
                 console.log(err);
-                setLoading(false);
             });
     }, [friend.userId, friend.friendId]);
 
