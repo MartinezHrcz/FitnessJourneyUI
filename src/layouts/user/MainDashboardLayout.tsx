@@ -9,6 +9,7 @@ import {
     CircleUser,
     type LucideIcon
 } from "lucide-react";
+import {Link} from "react-router-dom";
 import UserAvatar from "../../components/UserAvatar.tsx";
 
 import type {user} from "../../types/User.ts";
@@ -48,12 +49,12 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                     {navItems.map((item) => {
                         const isActive = activePath === item.href;
                         return (
-                            <a key={item.label} href={item.href} className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive ? 
+                            <Link key={item.label} to={item.href} className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive ? 
                                 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-semibold' 
                                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800'}`}>
                                 <item.icon size={20} />
                                 <span>{item.label}</span>
-                            </a>
+                            </Link>
                         )
                     })}
                 </nav>
@@ -65,7 +66,7 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                         {title}
                     </h2>
 
-                    <a href="/profile">
+                    <Link to="/profile">
                         <div className="flex items-center gap-1 dark:text-gray-300">
                             <div className="hidden sm:block"> Welcome back,</div><strong className="text-gray-900 dark:text-white font-semibold">{user?.name}</strong>
                             <div className="border-2 border-indigo-400 rounded-full cursor-pointer transition-transform duration-200 hover:scale-105">
@@ -77,7 +78,7 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                                 />
                             </div>
                         </div>
-                    </a>
+                    </Link>
                 </header>
 
                 <div className={`${removePadding ? 'p-0' : 'p-6'} flex-1 overflow-y-auto bg-gray-100 dark:bg-slate-950 transition-colors`}>
@@ -89,10 +90,10 @@ const MainDashboardLayout : React.FC<UserDashboardLayoutProps> = ({children, act
                 {navItems.map((item) => {
                     const isActive = activePath === item.href;
                     return (
-                        <a key={item.label} href={item.href} className={`flex flex-col items-center gap-1 ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                        <Link key={item.label} to={item.href} className={`flex flex-col items-center gap-1 ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}>
                             <item.icon size={22} />
                             <span className="text-[10px] font-medium">{item.label}</span>
-                        </a>
+                        </Link>
                     )
                 })}
             </nav>

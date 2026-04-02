@@ -1,6 +1,6 @@
 import axiosClient from "../axiosClient.ts";
 import type {createUser} from "../../types/User.ts";
-import type {authRequest, authResponse, refreshTokenRequest} from "../../types/Auth.ts";
+import type {authRequest, authResponse, refreshTokenRequest, UsernameAvailabilityResponse} from "../../types/Auth.ts";
 
 export const authApi = {
     registerUser: (data: createUser) =>
@@ -9,4 +9,8 @@ export const authApi = {
         axiosClient.post<authResponse>(`/auth/login`, data),
     refresh: (data: refreshTokenRequest) =>
         axiosClient.post<authResponse>(`/auth/refresh`, data),
+    usernameAvailable: (username: string) =>
+        axiosClient.get<UsernameAvailabilityResponse>(`/auth/username-available`, {
+            params: {username}
+        }),
 }

@@ -13,3 +13,8 @@ export interface authResponse{
 export interface refreshTokenRequest {
     refreshToken: string;
 }
+
+export interface UsernameAvailabilityResponse {
+    username: string;
+    available: boolean;
+}
