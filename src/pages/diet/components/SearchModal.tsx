@@ -12,7 +12,7 @@ interface SearchModalProps {
     onCreateNew: () => void;
 }
 
-const STAPLES = ["Chicken", "Rice", "Egg", "Oats", "Banana", "Milk"];
+const STAPLES = ["Chicken", "Rice", "Egg", "Banana", "Milk"];
 
 export const SearchModal = ({
                                 isOpen,
