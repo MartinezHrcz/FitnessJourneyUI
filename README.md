@@ -1,6 +1,6 @@
 # Fitness Journey Frontend
 
-Frontend application for the Fitness Journey thesis project.
+Frontend for the Fitness Journey thesis project.
 
 This application provides the user interface for tracking workouts, logging calories, managing profile data, and interacting socially with other users. It is built with React + TypeScript and communicates with a separate backend API.
 
@@ -60,7 +60,6 @@ High-level source layout:
 
 - Node.js 22+ recommended
 - npm
-- Running backend API for full functionality
 
 ## Environment Variables
 
@@ -72,12 +71,12 @@ Production-oriented values are defined in .env.production.
 Variables:
 
 - VITE_API_URL: base URL of backend REST API
-	- Example: https://your-backend-domain/api
+	- Example: https://backend-domain/api
 - VITE_WS_URL: WebSocket endpoint for chat
-	- Example: wss://your-backend-domain/ws-chat
+	- Example: wss://backend-domain/ws-chat
 - VITE_BASE_PATH: frontend base path for static hosting
-	- Local usually: /
-	- GitHub Pages usually: /<repository-name>/
+	- Local: /
+	- GitHub Pages: /<repository-name>/
 
 ## Local Development
 
@@ -164,14 +163,3 @@ This frontend expects a backend that supports:
 - Domain endpoints for users, workouts, diet, social features
 - WebSocket/STOMP endpoint for chat
 - CORS and credentials configuration compatible with frontend domain
-
-## Future Improvements
-
-- Add screenshots or short GIF demos for each module.
-- Add architecture diagrams for thesis documentation.
-- Add end-to-end tests for critical user flows.
-- Add CI checks for lint + tests on pull requests.
-
-## License
-
-License can be added based on thesis/publication requirements.
